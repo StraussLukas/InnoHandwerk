@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-minimal-header',
@@ -8,5 +9,9 @@ import { Component } from '@angular/core';
   styleUrl: './minimal-header.component.css'
 })
 export class MinimalHeaderComponent {
+
+  constructor() {
+
+  }
 
 }
