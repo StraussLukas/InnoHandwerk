@@ -1,1 +1,17 @@
-<p>project-info-tile works!</p>
+<div class="project-info-tile">
+  <div class="image-container">
+    <img [src]="project.image" alt="Projektbild" *ngIf="project.image">
+  </div>
+  <div class="info-container">
+    <h2>{{ project.title }}</h2>
+    <div class="details">
+      <div>
+        <p><strong>Name:</strong> {{ project.name }}</p>
+        <p><strong>Adresse:</strong> {{ project.address }}</p>
+        <p><strong>Status:</strong> {{ project.status }}</p>
+      </div>
+    </div>
+    <div *ngIf="isDashboard"><button type="submit">Details</button></div>
+
+  </div>
+</div>
