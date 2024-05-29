@@ -1,15 +1,26 @@
 import { Component, Input } from '@angular/core';
-import {DatePipe} from "@angular/common";
+import {DatePipe, NgIf} from "@angular/common";
 
 @Component({
   selector: 'app-chat-message',
   standalone: true,
-  imports: [
-    DatePipe
-  ],
+  imports: [DatePipe, NgIf],
   templateUrl: './chat-message.component.html',
-  styleUrl: './chat-message.component.css'
+  styleUrls: ['./chat-message.component.css']
 })
 export class ChatMessageComponent {
   @Input() message: any;
+  currentImageIndex: number = 0;
+
+  prevImage() {
+    if (this.message.images && this.message.images.length) {
+      this.currentImageIndex = (this.currentImageIndex - 1 + this.message.images.length) % this.message.images.length;
+    }
+  }
+
+  nextImage() {
+    if (this.message.images && this.message.images.length) {
+      this.currentImageIndex = (this.currentImageIndex + 1) % this.message.images.length;
+    }
+  }
 }

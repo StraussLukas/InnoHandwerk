@@ -2,5 +2,12 @@
   <div class="message-header">
     <strong>{{ message.user }}</strong> <span>{{ message.timestamp | date:'short' }}</span>
   </div>
-  <div class="message-text">{{ message.text }}</div>
+  <div class="main-message">
+    <div *ngIf="message.images && message.images.length" class="image-gallery">
+      <button class="arrow arrow-left" (click)="prevImage()">&#9664;</button>
+      <img [src]="message.images[currentImageIndex]" alt="Bild">
+      <button class="arrow arrow-right" (click)="nextImage()">&#9654;</button>
+    </div>
+    <div class="message-text">{{ message.text }}</div>
+  </div>
 </div>
