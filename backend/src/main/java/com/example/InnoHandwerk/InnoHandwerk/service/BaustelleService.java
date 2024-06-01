@@ -2,7 +2,6 @@ package com.example.InnoHandwerk.InnoHandwerk.service;
 
 import com.example.InnoHandwerk.InnoHandwerk.entity.Baustelle;
 import com.example.InnoHandwerk.InnoHandwerk.repository.BaustelleRepository;
-import com.example.InnoHandwerk.InnoHandwerk.repository.BaustelleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
