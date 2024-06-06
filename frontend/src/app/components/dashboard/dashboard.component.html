@@ -1,0 +1,17 @@
+<div class="filter-container">
+  <label for="filterType">Filter:</label>
+  <select id="filterType" [(ngModel)]="filterType" (change)="onFilterTypeChange()">
+    <option *ngFor="let type of filterTypes" [value]="type.value">{{ type.label }}</option>
+  </select>
+
+  <label for="filterValue" *ngIf="filterType">Wert:</label>
+  <select id="filterValue" [(ngModel)]="filterValue" *ngIf="filterType">
+    <option *ngFor="let value of (filterType === 'employee' ? employeeNames : statuses)" [value]="value">{{ value }}</option>
+  </select>
+
+  <button (click)="applyFilter()">Filter anwenden</button>
+</div>
+
+<div *ngFor="let project of projects" style="margin: 0px 100px">
+  <app-project-info-tile [project]="project" [isDashboard]="true"></app-project-info-tile>
+</div>

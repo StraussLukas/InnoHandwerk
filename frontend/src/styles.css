@@ -1,1 +1,16 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+  font-family: Calibri;
+  margin: 0 0;
+  background-color: #E4E4E4;
+}
+button {
+  background-color: #1d475d;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #618aaa;
+}

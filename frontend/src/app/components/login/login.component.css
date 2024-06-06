@@ -1,0 +1,47 @@
+
+form {
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+  border-radius: 10px;
+  margin: 10vh auto;
+  background: white;
+  width: 100%;
+  max-width: 500px;
+  border: none;
+  padding: 4vh 4vw;
+}
+
+.first {
+  font-size: 4vh;
+  align-self: center;
+  margin-bottom: 2vh;
+}
+
+.bn, .pw {
+  font-size: 2.6vh;
+}
+
+input {
+  width: 100%;
+  padding: 1.5vh 1.5vw;
+  margin: 2vh 0;
+  display: inline-block;
+  border: 0;
+  background-color: #E4E4E4;
+  box-sizing: border-box;
+}
+
+.input-checkbox {
+  margin: 4px 5px 0 0;
+  padding: 0;
+  width: 2vh;
+  height: 2vh;
+}
+
+button {
+  padding: 1.5vh 2vw;
+  margin: 1vh 0;
+  width: 100%;
+}
+

@@ -1,0 +1,15 @@
+<div class="project-detail">
+  <app-project-info-tile [project]="project"></app-project-info-tile>
+  <div class="chat-section">
+    <div class="messages">
+      <app-chat-message *ngFor="let message of messages" [message]="message"></app-chat-message>
+    </div>
+    <div class="input-section">
+      <input type="text" [(ngModel)]="newMessage" placeholder="Text">
+      <label class="custom-file-upload">
+        <input id="file-upload" type="file" (change)="onFileSelected($event)" #fileInput multiple>
+      </label>
+      <button (click)="sendMessage()">Senden</button>
+    </div>
+  </div>
+</div>
