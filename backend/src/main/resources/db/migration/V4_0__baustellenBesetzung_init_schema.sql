@@ -1,4 +1,4 @@
-CREATE TABLE baustellenBessetzung(
+CREATE TABLE baustellenbesetzung(
                           personalnummer INTEGER NOT NULL Primary KEY,
                           baustellen_id VARCHAR(255) NOT NULL,
                           datum DOUBLE NOT NULL,

@@ -5,14 +5,16 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.sql.Time;
+
 @Entity
 @Getter
 @Setter
-public class BaustellenBesetzung {
+public class Baustellenbesetzung {
     @Id
     private Integer personalnummer;
     private String baustellen_id;
     private Double datum;
-    private String uhrzeit_von;
-    private String uhrzeit_bis;
+    private Time uhrzeit_von;
+    private Time uhrzeit_bis;
 }

@@ -1,7 +1,7 @@
 package com.example.InnoHandwerk.InnoHandwerk.controller;
 
 import com.example.InnoHandwerk.InnoHandwerk.service.BaustellenBesetzungService;
-import com.example.InnoHandwerk.InnoHandwerk.entity.BaustellenBesetzung;
+import com.example.InnoHandwerk.InnoHandwerk.entity.Baustellenbesetzung;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,24 +17,24 @@ public class BaustellenBesetzungController {
     BaustellenBesetzungService service;
 
     @PostMapping(value = "/baustellenBesetzung")
-    public String addBaustellenBesetzung(@RequestBody BaustellenBesetzung baustellenBesetzung){
+    public String addBaustellenBesetzung(@RequestBody Baustellenbesetzung baustellenBesetzung){
         return service.addBaustellenBesetzung(baustellenBesetzung);
     }
 
     @GetMapping(value = "/baustellenBesetzung")
-    public List<BaustellenBesetzung> getAllBaustellenBesetzung(){
+    public List<Baustellenbesetzung> getAllBaustellenBesetzung(){
         return service.getAllBaustellenBesetzung();
     }
 
     @GetMapping(value = "/baustellenBesetzung/{personalnummer}")
-    public BaustellenBesetzung getBaustellenBesetzungByPersonalnummer(@PathVariable Integer personalnummer){
+    public Baustellenbesetzung getBaustellenBesetzungByPersonalnummer(@PathVariable Integer personalnummer){
         return service.getBaustellenBesetzungByPersonalnummer(personalnummer).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found")
         );
     }
 
     @PutMapping(value = "/baustellenBesetzung")
-    public String updateBaustellenBesetzung(@RequestBody BaustellenBesetzung baustellenBesetzung){
+    public String updateBaustellenBesetzung(@RequestBody Baustellenbesetzung baustellenBesetzung){
         return service.updateBaustellenBesetzung(baustellenBesetzung);
     }
 
