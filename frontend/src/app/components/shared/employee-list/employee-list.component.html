@@ -1,0 +1,11 @@
+<div *ngFor="let employee of employees; let i = index" class="employee-container">
+  <img [src]="employee.image" alt="Employee Image" class="employee-image">
+  <div class="employee-details">
+    <div class="employee-name">{{ employee.name }}</div>
+    <div class="employee-birthday"><span>Geburtsdatum:</span> {{ employee.birthday | date }}</div>
+    <div class="employee-street"><span>Straße und Nummer:</span> {{ employee.street }}</div>
+    <div class="employee-zip-city"><span>PLZ, Ort:</span> {{ employee.zip }}, {{ employee.city }}</div>
+    <div class="employee-account"><span>Kontonummer:</span> {{ employee.accountNumber }}</div>
+  </div>
+  <img [src]="employee.imageRight" alt="Right Side Image" class="employee-image-right" (click)="deleteEmployee(i)">
+</div>

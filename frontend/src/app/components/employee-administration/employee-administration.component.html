@@ -1,0 +1,56 @@
+<div class="employee-administration-container">
+  <button class="create-employee-button" (click)="openModal()">Mitarbeiter erstellen</button>
+  <div class="employee-list-wrapper">
+    <app-employee-list [employees]="employees" (employeeDeleted)="onEmployeeDeleted($event)"></app-employee-list>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" *ngIf="showModal">
+    <div class="modal-content">
+      <span class="close-button" (click)="closeModal()">&times;</span>
+      <form [formGroup]="employeeForm" (ngSubmit)="addEmployee()">
+        <div class="form-group">
+          <div class="form-row">
+            <label class="form-label">Name:</label>
+            <input class="form-input" formControlName="name" required>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Geburtsdatum:</label>
+            <input type="date" class="form-input" formControlName="birthday" required>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Straße und Nummer:</label>
+            <input class="form-input" formControlName="street" required>
+          </div>
+          <div class="form-row">
+            <label class="form-label">PLZ:</label>
+            <input class="form-input" formControlName="zip" required>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Ort:</label>
+            <input class="form-input" formControlName="city" required>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Kontonummer:</label>
+            <input class="form-input" formControlName="accountNumber" required>
+          </div>
+          <!-- New row for file input and drag-and-drop area -->
+          <div class="form-row">
+            <label class="form-label">Bild:</label>
+            <input type="file" class="form-input" (change)="onFileSelected($event)" required>
+          </div>
+          <div class="form-row">
+            <div class="drag-drop-area" (drop)="onDrop($event)" (dragover)="onDragOver($event)">
+              <p>Bild hierher ziehen um es auszuwählen</p>
+              <img *ngIf="imagePreview" [src]="imagePreview" alt="Image Preview" class="image-preview">
+            </div>
+          </div>
+        </div>
+        <div class="button-group">
+          <button type="submit" [disabled]="!employeeForm.valid">Hinzufügen</button>
+          <button type="button" (click)="closeModal()">Abbrechen</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
