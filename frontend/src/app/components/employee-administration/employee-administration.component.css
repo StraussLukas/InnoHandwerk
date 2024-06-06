@@ -7,17 +7,10 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  background-color: #2c3e50;
-  color: white;
   border: none;
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
-  border-radius: 5px;
-}
-
-.create-employee-button:hover {
-  background-color: #1a242f;
 }
 
 .employee-list-wrapper {
@@ -84,18 +77,11 @@
 }
 
 .button-group button {
-  background-color: #2c3e50;
-  color: white;
   border: none;
   padding: 10px 20px;
   font-size: 16px;
   cursor: pointer;
-  border-radius: 5px;
   margin-right: 10px;
-}
-
-.button-group button:hover {
-  background-color: #1a242f;
 }
 
 .button-group button[type="button"] {

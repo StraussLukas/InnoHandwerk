@@ -1,13 +1,16 @@
 import { Component } from '@angular/core';
 import {ProjectInfoTileComponent} from "../shared/project-info-tile/project-info-tile.component";
-import {NgForOf} from "@angular/common";
+import {NgForOf, NgIf} from "@angular/common";
+import {FormsModule} from "@angular/forms";
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   imports: [
     ProjectInfoTileComponent,
-    NgForOf
+    NgForOf,
+    FormsModule,
+    NgIf
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
@@ -55,4 +58,25 @@ export class DashboardComponent {
       employees: ['Lukas Mayer', 'Tina Becker', 'Julia Wagner']
     }
   ];
+
+  filterType: string = '';
+  filterValue: string = '';
+
+  filterTypes = [
+    { value: '', label: 'Kein Filter' },
+    { value: 'employee', label: 'Mitarbeiter' },
+    { value: 'status', label: 'Status' }
+  ];
+
+  employeeNames = ['Tobias Keller', 'Florian Wagner', 'Sebastian Meier', 'Daniel Fischer', 'Andreas Schulze', 'Katrin Hoffmann', 'Laura Becker', 'Julia Neumann', 'Lena Schneider', 'Martina Krüger', 'Thomas Müller', 'Sarah Braun', 'Michael König', 'Anja Richter', 'Lukas Bauer', 'Christina Wolf', 'Patrick Schäfer', 'Sandra Hartmann', 'Kevin Lehmann', 'Claudia Weber']
+  statuses = ['In Planung', 'Fertiggestellt', 'Abgeschlossen'];
+
+  onFilterTypeChange() {
+    this.filterValue = '';
+  }
+
+  applyFilter() {
+    //Call ans Backend
+  }
+
 }
