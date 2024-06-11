@@ -1,14 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface Employee {
-  image: string;
-  vorname: string;
-  nachname: string;
-  email: string;
-  personalnummer: number;
-  imageRight: string;
-}
+import {Employee} from "../../../model/employee";
 
 @Component({
   selector: 'app-employee-list',

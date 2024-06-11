@@ -3,15 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { CommonModule } from '@angular/common';
 import { EmployeeListComponent } from '../shared/employee-list/employee-list.component';
 import { HttpClient } from '@angular/common/http';
-
-interface Employee {
-  image: string;
-  vorname: string;
-  nachname: string;
-  email: string;
-  personalnummer: number;
-  imageRight: string;
-}
+import { Employee } from "../../model/employee";
 
 @Component({
   selector: 'app-employee-administration',
