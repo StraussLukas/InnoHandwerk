@@ -26,20 +26,20 @@ public class BaustellenBesetzungController {
         return service.getAllBaustellenBesetzung();
     }
 
-    @GetMapping(value = "/baustellenBesetzung/{personalnummer}")
-    public Baustellenbesetzung getBaustellenBesetzungByPersonalnummer(@PathVariable Integer personalnummer){
-        return service.getBaustellenBesetzungByPersonalnummer(personalnummer).orElseThrow(
+    @GetMapping(value = "/baustellenBesetzung/{id}")
+    public Baustellenbesetzung getBaustellenBesetzungById(@PathVariable Integer id){
+        return service.getBaustellenBesetzungById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found")
         );
     }
 
     @PutMapping(value = "/baustellenBesetzung")
-    public String updateBaustellenBesetzung(@RequestBody Baustellenbesetzung baustellenBesetzung){
+    public Integer updateBaustellenBesetzung(@RequestBody Baustellenbesetzung baustellenBesetzung){
         return service.updateBaustellenBesetzung(baustellenBesetzung);
     }
 
-    @DeleteMapping(value = "/baustellenBesetzung/{personalnummer}")
-    public void deleteBaustellenBesetzungByPersonalnummer(@PathVariable Integer personalnummer){
-        service.deleteBaustellenBesetzungByPersonalnummer(personalnummer);
+    @DeleteMapping(value = "/baustellenBesetzung/{id}")
+    public void deleteBaustellenBesetzungById(@PathVariable Integer id){
+        service.deleteBaustellenBesetzungById(id);
     }
 }

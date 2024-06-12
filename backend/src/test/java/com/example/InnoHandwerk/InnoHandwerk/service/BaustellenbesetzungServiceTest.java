@@ -78,17 +78,17 @@ public class BaustellenbesetzungServiceTest {
     @Test
     void getBaustellenBesetzungByPersonalnummer_whenEntityExists_thenReturnEntity() {
         // actual
-        Optional<Baustellenbesetzung> actualEntity = service.getBaustellenBesetzungByPersonalnummer(1001);
+        Optional<Baustellenbesetzung> actualEntity = service.getBaustellenBesetzungById(5);
         // assert
         assertThat(actualEntity).isPresent();
-        assertEquals("1", actualEntity.get().getBaustellen_id());
+        assertEquals(5, actualEntity.get().getBaustellen_id());
     }
 
     @Order(5)
     @Test
     void getBaustellenBesetzungByPersonalnummer_whenEntityNotExists_thenReturnThrowException() {
         // assert
-        assertThat(service.getBaustellenBesetzungByPersonalnummer(9999)).isNotPresent();
+        assertThat(service.getBaustellenBesetzungById(9999)).isNotPresent();
     }
 
     @Order(6)
@@ -98,9 +98,9 @@ public class BaustellenbesetzungServiceTest {
         besetzung1.setBaustellen_id(7);
         // actual
         var actualId = service.updateBaustellenBesetzung(besetzung1);
-        var actualEntity = service.getBaustellenBesetzungByPersonalnummer(1001).orElse(null);
+        var actualEntity = service.getBaustellenBesetzungById(5).orElse(null);
         // assert
-        assertEquals("1001", actualId);
+        assertEquals(5, actualId);
         assertThat(actualEntity).isNotNull();
         assertEquals(7, actualEntity.getBaustellen_id());
     }
@@ -109,7 +109,7 @@ public class BaustellenbesetzungServiceTest {
     @Test
     void deleteBaustellenBesetzungByPersonalnummer_whenSuccessful_thenSizeMustBe5() {
         // actual
-        service.deleteBaustellenBesetzungByPersonalnummer(1001);
+        service.deleteBaustellenBesetzungById(5);
         var actualEntities = service.getAllBaustellenBesetzung();
         // assert
         assertEquals(5, actualEntities.size());
@@ -118,7 +118,8 @@ public class BaustellenbesetzungServiceTest {
     @Order(8)
     @Test
     @Sql(statements = {
-            "DELETE FROM baustellenbesetzung WHERE personalnummer = 1002",
+            "DELETE FROM baustellenbesetzung WHERE id = 5",
+            "DELETE FROM baustellenbesetzung WHERE id = 6",
             "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
     })
     void getAllBaustellenBesetzung_checkNumberOfEntitiesAfterDeletingTestData_mustBe1() {

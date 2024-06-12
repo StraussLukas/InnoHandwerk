@@ -22,15 +22,15 @@ public class BaustellenBesetzungService {
         return repository.findAll();
     }
 
-    public Optional<Baustellenbesetzung> getBaustellenBesetzungByPersonalnummer(Integer personalnummer) {
-        return repository.findById(personalnummer);
+    public Optional<Baustellenbesetzung> getBaustellenBesetzungById(Integer id) {
+        return repository.findById(id);
     }
 
-    public String updateBaustellenBesetzung(Baustellenbesetzung baustellenBesetzung) {
-        return repository.save(baustellenBesetzung).getPersonalnummer().toString();
+    public Integer updateBaustellenBesetzung(Baustellenbesetzung baustellenBesetzung) {
+        return repository.save(baustellenBesetzung).getId();
     }
 
-    public void deleteBaustellenBesetzungByPersonalnummer(Integer personalnummer) {
-        repository.deleteById(personalnummer);
+    public void deleteBaustellenBesetzungById(Integer id) {
+        repository.deleteById(id);
     }
 }

@@ -54,6 +54,7 @@ public class BaustellenbesetzungControllerTest {
         validBaustellenbesetzung2.setUhrzeit_von(Time.valueOf("09:00:00"));
         validBaustellenbesetzung2.setUhrzeit_bis(Time.valueOf("18:00:00"));
 
+        updatedBaustellenbesetzung2.setId(6);
         updatedBaustellenbesetzung2.setPersonalnummer(1002);
         updatedBaustellenbesetzung2.setBaustellen_id(7);
         updatedBaustellenbesetzung2.setDatum(20230530.0);
@@ -116,12 +117,12 @@ public class BaustellenbesetzungControllerTest {
     @Order(4)
     void getBaustellenBesetzungByPersonalnummer_whenEntityWithIdFound_ThenOkAndReturnEntity() throws Exception {
         this.mockMvc.perform(
-                        get("/baustellenBesetzung/" + 1)
+                        get("/baustellenBesetzung/" + 5)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.personalnummer").value(1))
+                .andExpect(jsonPath("$.personalnummer").value(1001))
                 .andExpect(jsonPath("$.baustellen_id").value(5))
                 .andExpect(jsonPath("$.datum").value(20230530.0))
                 .andExpect(jsonPath("$.uhrzeit_von").value("08:00:00"))
@@ -150,7 +151,7 @@ public class BaustellenbesetzungControllerTest {
                 .andExpect(status().isOk());
 
         this.mockMvc.perform(
-                        get("/baustellenBesetzung/" + 1002)
+                        get("/baustellenBesetzung/" + 6)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -176,7 +177,8 @@ public class BaustellenbesetzungControllerTest {
     @Test
     @Order(8)
     @Sql(statements = {
-            "DELETE FROM baustellenbesetzung WHERE personalnummer = 1002",
+            "DELETE FROM baustellenbesetzung WHERE id = 5",
+            "DELETE FROM baustellenbesetzung WHERE id = 6",
             "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
 
     })
