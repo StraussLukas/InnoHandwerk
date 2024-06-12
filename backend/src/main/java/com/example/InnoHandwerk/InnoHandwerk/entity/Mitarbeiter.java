@@ -14,4 +14,6 @@ public class Mitarbeiter {
     private String vorname;
     private String nachname;
     private String email;
+    private Boolean admin;
+
 }

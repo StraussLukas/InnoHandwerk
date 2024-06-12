@@ -28,13 +28,13 @@ public class BaustellenbesetzungServiceTest {
     @BeforeAll
     void setUp() {
         besetzung1.setPersonalnummer(1001);
-        besetzung1.setBaustellen_id("1");
+        besetzung1.setBaustellen_id(5);
         besetzung1.setDatum(20230530.0);
         besetzung1.setUhrzeit_von(Time.valueOf("08:00:00"));
         besetzung1.setUhrzeit_bis(Time.valueOf("16:00:00"));
 
         besetzung2.setPersonalnummer(1002);
-        besetzung2.setBaustellen_id("2");
+        besetzung2.setBaustellen_id(6);
         besetzung2.setDatum(20230530.0);
         besetzung2.setUhrzeit_von(Time.valueOf("09:00:00"));
         besetzung2.setUhrzeit_bis(Time.valueOf("17:00:00"));
@@ -78,38 +78,38 @@ public class BaustellenbesetzungServiceTest {
     @Test
     void getBaustellenBesetzungByPersonalnummer_whenEntityExists_thenReturnEntity() {
         // actual
-        Optional<Baustellenbesetzung> actualEntity = service.getBaustellenBesetzungByPersonalnummer(1001);
+        Optional<Baustellenbesetzung> actualEntity = service.getBaustellenBesetzungById(5);
         // assert
         assertThat(actualEntity).isPresent();
-        assertEquals("1", actualEntity.get().getBaustellen_id());
+        assertEquals(5, actualEntity.get().getBaustellen_id());
     }
 
     @Order(5)
     @Test
     void getBaustellenBesetzungByPersonalnummer_whenEntityNotExists_thenReturnThrowException() {
         // assert
-        assertThat(service.getBaustellenBesetzungByPersonalnummer(9999)).isNotPresent();
+        assertThat(service.getBaustellenBesetzungById(9999)).isNotPresent();
     }
 
     @Order(6)
     @Test
     void updateBaustellenBesetzung_whenValidModel_thenReturnEntityId() {
         // arrange
-        besetzung1.setBaustellen_id("UpdatedID");
+        besetzung1.setBaustellen_id(7);
         // actual
         var actualId = service.updateBaustellenBesetzung(besetzung1);
-        var actualEntity = service.getBaustellenBesetzungByPersonalnummer(1001).orElse(null);
+        var actualEntity = service.getBaustellenBesetzungById(5).orElse(null);
         // assert
-        assertEquals("1001", actualId);
+        assertEquals(5, actualId);
         assertThat(actualEntity).isNotNull();
-        assertEquals("UpdatedID", actualEntity.getBaustellen_id());
+        assertEquals(7, actualEntity.getBaustellen_id());
     }
 
     @Order(7)
     @Test
     void deleteBaustellenBesetzungByPersonalnummer_whenSuccessful_thenSizeMustBe5() {
         // actual
-        service.deleteBaustellenBesetzungByPersonalnummer(1001);
+        service.deleteBaustellenBesetzungById(5);
         var actualEntities = service.getAllBaustellenBesetzung();
         // assert
         assertEquals(5, actualEntities.size());
@@ -118,7 +118,9 @@ public class BaustellenbesetzungServiceTest {
     @Order(8)
     @Test
     @Sql(statements = {
-            "DELETE FROM baustellenbesetzung WHERE personalnummer = 1002"
+            "DELETE FROM baustellenbesetzung WHERE id = 5",
+            "DELETE FROM baustellenbesetzung WHERE id = 6",
+            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
     })
     void getAllBaustellenBesetzung_checkNumberOfEntitiesAfterDeletingTestData_mustBe1() {
         // actual

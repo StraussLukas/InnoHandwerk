@@ -46,25 +46,22 @@ public class LoginControllerTest {
     void setUp(){
         validLogin10.setEmail("monikaschmitz10@mail.de");
         validLogin10.setPasswort("monikaschmitz");
-        validLogin10.setAdmin(false);
         validLogin10.setPersonalnummer(200);
 
 
-        validLogin20.setEmail("hansmueller.admin10@mail.de");
-        validLogin20.setPasswort("root");
-        validLogin20.setAdmin(true);
+        validLogin20.setEmail("hansmueller10@mail.de");
+        validLogin20.setPasswort("hansmueller");
         validLogin20.setPersonalnummer(100);
 
-        updatedLogin20.setEmail("hansmueller.admin10@mail.de");
+        updatedLogin20.setEmail("hansmueller10@mail.de");
         updatedLogin20.setPasswort("root");
-        updatedLogin20.setAdmin(false);
         updatedLogin20.setPersonalnummer(100);
 
     }
 
     @Test
     @Order(1)
-    void getLogin_checkNumberOfEntitiesBeforeAddingTestData_thenStatusOkAndMustBe6() throws Exception {
+    void getLogin_checkNumberOfEntitiesBeforeAddingTestData_thenStatusOkAndMustBe5() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(
                         get("/login")
                                 .accept(MediaType.APPLICATION_JSON))
@@ -74,7 +71,7 @@ public class LoginControllerTest {
         String contentAsString = mvcResult.getResponse().getContentAsString();
         List<Login> result = objectMapper.readValue(contentAsString, new TypeReference<>() {
         });
-        assertThat(result).hasSize(6);
+        assertThat(result).hasSize(5);
     }
 
     @Test
@@ -100,7 +97,7 @@ public class LoginControllerTest {
 
     @Test
     @Order(3)
-    void getAllLogin_checkNumberOfEntitiesAfterAddingTestData_thenStatusOkAndSize8() throws Exception {
+    void getAllLogin_checkNumberOfEntitiesAfterAddingTestData_thenStatusOkAndSize7() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(
                         get("/login")
                                 .accept(MediaType.APPLICATION_JSON))
@@ -110,7 +107,7 @@ public class LoginControllerTest {
         String contentAsString = mvcResult.getResponse().getContentAsString();
         List<Login> result = objectMapper.readValue(contentAsString, new TypeReference<>() {
         });
-        assertThat(result).hasSize(8);
+        assertThat(result).hasSize(7);
     }
 
     @Test
@@ -124,8 +121,7 @@ public class LoginControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.email").value("monikaschmitz10@mail.de"))
                 .andExpect(jsonPath("$.personalnummer").value(200))
-                .andExpect(jsonPath("$.passwort").value("monikaschmitz"))
-                .andExpect(jsonPath("$.admin").value(false));
+                .andExpect(jsonPath("$.passwort").value("monikaschmitz"));
     }
 
     @Test
@@ -150,20 +146,19 @@ public class LoginControllerTest {
                 .andExpect(status().isOk());
 
         this.mockMvc.perform(
-                        get("/login/" + "hansmueller.admin10@mail.de")
+                        get("/login/" + "hansmueller10@mail.de")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.email").value("hansmueller.admin10@mail.de"))
+                .andExpect(jsonPath("$.email").value("hansmueller10@mail.de"))
                 .andExpect(jsonPath("$.personalnummer").value(100))
-                .andExpect(jsonPath("$.passwort").value("root"))
-                .andExpect(jsonPath("$.admin").value(false));
+                .andExpect(jsonPath("$.passwort").value("root"));
     }
 
     @Test
     @Order(7)
-    void deleteLoginByEmail_checkNumberOfEntitiesAfterDeletingOneTestData_thenStatusOkAndSize7() throws Exception {
+    void deleteLoginByEmail_checkNumberOfEntitiesAfterDeletingOneTestData_thenStatusOkAndSize6() throws Exception {
         this.mockMvc.perform(
                         delete("/login/" + "monikaschmitz10@mail.de")
                                 .accept(MediaType.APPLICATION_JSON)
@@ -180,16 +175,16 @@ public class LoginControllerTest {
         String contentAsString = mvcResult.getResponse().getContentAsString();
         List<Login> result = objectMapper.readValue(contentAsString, new TypeReference<>() {
         });
-        assertThat(result).hasSize(7);
+        assertThat(result).hasSize(6);
     }
 
     @Test
     @Order(8)
     @Sql(statements = {
             "DELETE FROM login WHERE email = 'monikaschmitz10@mail.de'",
-            "DELETE FROM login WHERE email = 'hansmueller.admin10@mail.de'"
+            "DELETE FROM login WHERE email = 'hansmueller10@mail.de'"
     })
-    void getAllLogin_checkNumberOfEntitiesAfterDeletingTestData_thenStatusOkAndSize6() throws Exception {
+    void getAllLogin_checkNumberOfEntitiesAfterDeletingTestData_thenStatusOkAndSize5() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(
                         get("/login")
                                 .accept(MediaType.APPLICATION_JSON))
@@ -199,7 +194,7 @@ public class LoginControllerTest {
         String contentAsString = mvcResult.getResponse().getContentAsString();
         List<Login> result = objectMapper.readValue(contentAsString, new TypeReference<>() {
         });
-        assertThat(result).hasSize(6);
+        assertThat(result).hasSize(5);
     }
 
 }

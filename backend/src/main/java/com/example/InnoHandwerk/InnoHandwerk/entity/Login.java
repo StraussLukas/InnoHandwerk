@@ -12,7 +12,6 @@ public class Login {
     @Id
     private String email;
     private String passwort;
-    private Boolean admin;
     private Integer personalnummer;
 
 }

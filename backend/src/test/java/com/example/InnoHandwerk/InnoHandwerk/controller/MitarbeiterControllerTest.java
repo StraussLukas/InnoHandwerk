@@ -48,16 +48,19 @@ public class MitarbeiterControllerTest {
         validMitarbeiter10.setVorname("Max");
         validMitarbeiter10.setNachname("Meier");
         validMitarbeiter10.setEmail("maxmeier@email.com");
+        validMitarbeiter10.setAdmin(true);
 
         validMitarbeiter20.setPersonalnummer(20);
         validMitarbeiter20.setVorname("Maria");
         validMitarbeiter20.setNachname("Meier");
         validMitarbeiter20.setEmail("mariameier@email.com");
+        validMitarbeiter20.setAdmin(false);
 
         updatedMitarbeiter.setPersonalnummer(10);
         updatedMitarbeiter.setVorname("Max");
         updatedMitarbeiter.setNachname("Müller");
         updatedMitarbeiter.setEmail("maxmueller@email.com");
+        updatedMitarbeiter.setAdmin(true);
 
     }
 

@@ -27,13 +27,11 @@ public class LoginServiceTest {
     void setUp() {
         login10.setEmail("monikaschmitz10@mail.de");
         login10.setPasswort("monikaschmitz");
-        login10.setAdmin(false);
         login10.setPersonalnummer(200);
 
 
-        login20.setEmail("hansmueller.admin10@mail.de");
+        login20.setEmail("hansmueller10@mail.de");
         login20.setPasswort("root");
-        login20.setAdmin(true);
         login20.setPersonalnummer(100);
     }
 
@@ -44,9 +42,9 @@ public class LoginServiceTest {
 
     @Order(1)
     @Test
-    void getAllLogin_checkNumberOfEntitiesBeforeAddingTestData_mustBe6() {
+    void getAllLogin_checkNumberOfEntitiesBeforeAddingTestData_mustBe5() {
         //arrange
-        var expectedEntities = 6;
+        var expectedEntities = 5;
         //actual
         var actualEntities = service.getAllLogin();
         //assert
@@ -61,14 +59,14 @@ public class LoginServiceTest {
         var actualId2 = service.addLogin(login20);
         //assert
         assertThat(actualId1).isEqualTo("monikaschmitz10@mail.de");
-        assertThat(actualId2).isEqualTo("hansmueller.admin10@mail.de");
+        assertThat(actualId2).isEqualTo("hansmueller10@mail.de");
     }
 
     @Order(3)
     @Test
-    void getAllLogin_checkNumberOfEntitiesAfterAddingTestData_mustBe8() {
+    void getAllLogin_checkNumberOfEntitiesAfterAddingTestData_mustBe7() {
         //arrange
-        var expectedEntities = 8;
+        var expectedEntities = 7;
         //actual
         var actualEntities = service.getAllLogin();
         //assert
@@ -100,20 +98,19 @@ public class LoginServiceTest {
         updatedLogin.setPersonalnummer(200);
         updatedLogin.setEmail("monikaschmitz10@mail.de");
         updatedLogin.setPasswort("monikaschmitz");
-        updatedLogin.setAdmin(true);
         //actual
         var actualId = service.updateLogin(updatedLogin);
         var actualEntity = service.getLoginbyEmail(actualId);
         //assert
         assertThat(actualId).isEqualTo("monikaschmitz10@mail.de");
         assertThat(actualEntity).isPresent();
-        assertThat(actualEntity.get().getAdmin()).isEqualTo(true);}
+    }
 
     @Order(7)
     @Test
-    void deleteLoginByEmail_whenSuccessful_thenSizeMustBe7() {
+    void deleteLoginByEmail_whenSuccessful_thenSizeMustBe6() {
         //arrange
-        var expectedEntities = 7;
+        var expectedEntities = 6;
         //actual
         service.deleteLoginbyEmail("monikaschmitz10@mail.de");
 
@@ -126,11 +123,11 @@ public class LoginServiceTest {
     @Test
     @Sql(statements = {
             "DELETE FROM login WHERE email = 'monikaschmitz10@mail.de'",
-            "DELETE FROM login WHERE email = 'hansmueller.admin10@mail.de'"
+            "DELETE FROM login WHERE email = 'hansmueller10@mail.de'"
     })
-    void getAllLogin_checkNumberOfEntitiesAfterDeletingTestData_must6() {
+    void getAllLogin_checkNumberOfEntitiesAfterDeletingTestData_must5() {
         //arrange
-        var expectedEntities = 6;
+        var expectedEntities = 5;
         //actual
         var actualEntities = service.getAllLogin();
         //assert
