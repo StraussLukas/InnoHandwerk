@@ -32,11 +32,13 @@ public class BeitragServiceTest {
         beitrag1.setFreitext("text1");
         beitrag1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
         beitrag1.setBaustelleId(-10);
+        beitrag1.setPersonalnummer(-10);
 
         beitrag2.setId(-2);
         beitrag2.setFreitext("text2");
         beitrag2.setZeitstempel(Timestamp.valueOf("2024-07-14 14:30:00"));
         beitrag2.setBaustelleId(-20);
+        beitrag2.setPersonalnummer(-10);
     }
 
     @Test
@@ -103,6 +105,7 @@ public class BeitragServiceTest {
         updatedBeitrag.setFreitext("text1");
         updatedBeitrag.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
         updatedBeitrag.setBaustelleId(-30);
+        updatedBeitrag.setPersonalnummer(-10);
         //actual
         var actualId = beitragService.updateBeitrag(updatedBeitrag);
         var actualEntity = beitragService.getBeitragById(actualId);

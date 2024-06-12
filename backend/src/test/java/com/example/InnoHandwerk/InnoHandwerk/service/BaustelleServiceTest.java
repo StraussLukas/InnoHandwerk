@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.sql.Timestamp;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -27,18 +28,24 @@ public class BaustelleServiceTest {
     @BeforeAll
     void setUp() {
         baustelle1.setId(5);
+        baustelle1.setTitel("Baustelle 1");
         baustelle1.setName_bauherr("Bauherr1");
         baustelle1.setAdresse("Adresse1");
+        baustelle1.setStatus("Erstellt");
         baustelle1.setTelefon("123456789");
         baustelle1.setEmail("bauherr1@example.com");
         baustelle1.setArbeitsaufwand(10);
+        baustelle1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
 
         baustelle2.setId(6);
+        baustelle2.setTitel("Baustelle 2");
         baustelle2.setName_bauherr("Bauherr2");
         baustelle2.setAdresse("Adresse2");
+        baustelle2.setStatus("In Arbeit");
         baustelle2.setTelefon("987654321");
         baustelle2.setEmail("bauherr2@example.com");
         baustelle2.setArbeitsaufwand(20);
+        baustelle2.setZeitstempel(Timestamp.valueOf("2024-03-21 10:15:45"));
     }
 
     @Test
@@ -79,10 +86,10 @@ public class BaustelleServiceTest {
     @Test
     void getBaustelleById_whenEntityExists_thenReturnEntity() {
         // actual
-        Optional<Baustelle> actualEntity = service.getBaustelleById(1);
+        Optional<Baustelle> actualEntity = service.getBaustelleById(5);
         // assert
         assertThat(actualEntity).isPresent();
-        assertEquals("Max Mustermann", actualEntity.get().getName_bauherr());
+        assertEquals("Bauherr1", actualEntity.get().getName_bauherr());
     }
 
     @Order(5)
@@ -121,7 +128,7 @@ public class BaustelleServiceTest {
     @Sql(statements = {
             "DELETE FROM baustelle WHERE id = 6"
     })
-    void getAllBaustelle_checkNumberOfEntitiesAfterDeletingTestData_mustBe1() {
+    void getAllBaustelle_checkNumberOfEntitiesAfterDeletingTestData_mustBe4() {
         // actual
         var actualEntities = service.getAllBaustelle();
         // assert

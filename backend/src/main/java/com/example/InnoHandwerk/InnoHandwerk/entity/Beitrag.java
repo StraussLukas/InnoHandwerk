@@ -31,4 +31,5 @@ public class Beitrag {
     private Timestamp zeitstempel;
     @Column(name = "baustelle_id")
     private Integer baustelleId;
+    private Integer personalnummer;
 }

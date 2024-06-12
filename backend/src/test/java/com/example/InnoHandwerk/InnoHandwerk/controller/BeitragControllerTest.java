@@ -53,16 +53,19 @@ public class BeitragControllerTest {
         beitrag1.setFreitext("text1");
         beitrag1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
         beitrag1.setBaustelleId(-10);
+        beitrag1.setPersonalnummer(10);
 
         beitrag2.setId(-2);
         beitrag2.setFreitext("text2");
         beitrag2.setZeitstempel(Timestamp.valueOf("2024-07-14 14:30:00"));
         beitrag2.setBaustelleId(-20);
+        beitrag2.setPersonalnummer(-10);
 
         beitragupdated.setId(-2);
         beitragupdated.setFreitext("text2");
         beitragupdated.setZeitstempel(Timestamp.valueOf("2024-07-14 14:30:00"));
         beitragupdated.setBaustelleId(-30);
+        beitragupdated.setPersonalnummer(-10);
     }
 
     @Test

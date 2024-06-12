@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.sql.Timestamp;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -25,19 +27,25 @@ public class BaustelleRepositoryTest {
     @BeforeAll
     void setUp(){
         baustelle1.setId(1);
+        baustelle1.setTitel("Baustelle 1");
         baustelle1.setName_bauherr("Bauherr1");
         baustelle1.setAdresse("Adresse1");
+        baustelle1.setStatus("Erstellt");
         baustelle1.setTelefon("123456789");
         baustelle1.setEmail("bauherr1@example.com");
         baustelle1.setArbeitsaufwand(10);
+        baustelle1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
         repository.saveAndFlush(baustelle1);
 
         baustelle2.setId(2);
+        baustelle2.setTitel("Baustelle 2");
         baustelle2.setName_bauherr("Bauherr2");
         baustelle2.setAdresse("Adresse2");
+        baustelle2.setStatus("In Arbeit");
         baustelle2.setTelefon("987654321");
         baustelle2.setEmail("bauherr2@example.com");
         baustelle2.setArbeitsaufwand(20);
+        baustelle2.setZeitstempel(Timestamp.valueOf("2024-03-21 10:15:45"));
         repository.saveAndFlush(baustelle2);
     }
 
