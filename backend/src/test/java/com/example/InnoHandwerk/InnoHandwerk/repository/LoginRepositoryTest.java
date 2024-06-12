@@ -27,13 +27,11 @@ public class LoginRepositoryTest {
 
         login1.setEmail("testmail1@mail.de");
         login1.setPasswort("StarkesPasswort1");
-        login1.setAdmin(false);
         login1.setPersonalnummer(1000);
         repository.saveAndFlush(login1);
 
         login2.setEmail("testmail2@mail.de");
         login2.setPasswort("StarkesPasswort2");
-        login2.setAdmin(true);
         login2.setPersonalnummer(2000);
         repository.saveAndFlush(login2);
     }
@@ -58,7 +56,6 @@ public class LoginRepositoryTest {
         // assert
         assertThat(actual.get().getPersonalnummer()).isEqualTo(1000);
         assertThat(actual.get().getEmail()).isEqualTo("testmail1@mail.de");
-        assertThat(actual.get().getAdmin()).isEqualTo(false);
         assertThat(actual.get().getPasswort()).isEqualTo("StarkesPasswort1");
     }
 
@@ -69,7 +66,6 @@ public class LoginRepositoryTest {
         updateAdmin.setPersonalnummer(1000);
         updateAdmin.setPasswort("StarkesPasswort1");
         updateAdmin.setEmail("testmail1@mail.de");
-        updateAdmin.setAdmin(true);
         // act
         repository.save(updateAdmin);
         var actual = repository.findById("testmail1@mail.de");
@@ -77,7 +73,6 @@ public class LoginRepositoryTest {
         assertThat(actual.get().getPersonalnummer()).isEqualTo(1000);
         assertThat(actual.get().getEmail()).isEqualTo("testmail1@mail.de");
         assertThat(actual.get().getPasswort()).isEqualTo("StarkesPasswort1");
-        assertThat(actual.get().getAdmin()).isEqualTo(true);
     }
 
     @AfterAll

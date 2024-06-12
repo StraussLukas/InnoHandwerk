@@ -43,19 +43,20 @@ public class BaustellenbesetzungControllerTest {
     @BeforeAll
     void setUp() {
         validBaustellenbesetzung1.setPersonalnummer(1001);
-        validBaustellenbesetzung1.setBaustellen_id("B-001");
+        validBaustellenbesetzung1.setBaustellen_id(5);
         validBaustellenbesetzung1.setDatum(20230530.0);
         validBaustellenbesetzung1.setUhrzeit_von(Time.valueOf("08:00:00"));
         validBaustellenbesetzung1.setUhrzeit_bis(Time.valueOf("17:00:00"));
 
         validBaustellenbesetzung2.setPersonalnummer(1002);
-        validBaustellenbesetzung2.setBaustellen_id("B-002");
+        validBaustellenbesetzung2.setBaustellen_id(6);
         validBaustellenbesetzung2.setDatum(20230530.0);
         validBaustellenbesetzung2.setUhrzeit_von(Time.valueOf("09:00:00"));
         validBaustellenbesetzung2.setUhrzeit_bis(Time.valueOf("18:00:00"));
 
+        updatedBaustellenbesetzung2.setId(6);
         updatedBaustellenbesetzung2.setPersonalnummer(1002);
-        updatedBaustellenbesetzung2.setBaustellen_id("B-002");
+        updatedBaustellenbesetzung2.setBaustellen_id(7);
         updatedBaustellenbesetzung2.setDatum(20230530.0);
         updatedBaustellenbesetzung2.setUhrzeit_von(Time.valueOf("10:00:00"));
         updatedBaustellenbesetzung2.setUhrzeit_bis(Time.valueOf("19:00:00"));
@@ -116,13 +117,13 @@ public class BaustellenbesetzungControllerTest {
     @Order(4)
     void getBaustellenBesetzungByPersonalnummer_whenEntityWithIdFound_ThenOkAndReturnEntity() throws Exception {
         this.mockMvc.perform(
-                        get("/baustellenBesetzung/" + 1)
+                        get("/baustellenBesetzung/" + 5)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.personalnummer").value(1))
-                .andExpect(jsonPath("$.baustellen_id").value("B-001"))
+                .andExpect(jsonPath("$.personalnummer").value(1001))
+                .andExpect(jsonPath("$.baustellen_id").value(5))
                 .andExpect(jsonPath("$.datum").value(20230530.0))
                 .andExpect(jsonPath("$.uhrzeit_von").value("08:00:00"))
                 .andExpect(jsonPath("$.uhrzeit_bis").value("17:00:00"));
@@ -150,13 +151,13 @@ public class BaustellenbesetzungControllerTest {
                 .andExpect(status().isOk());
 
         this.mockMvc.perform(
-                        get("/baustellenBesetzung/" + 1002)
+                        get("/baustellenBesetzung/" + 6)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.personalnummer").value(1002))
-                .andExpect(jsonPath("$.baustellen_id").value("B-002"))
+                .andExpect(jsonPath("$.baustellen_id").value(7))
                 .andExpect(jsonPath("$.datum").value(20230530.0))
                 .andExpect(jsonPath("$.uhrzeit_von").value("10:00:00"))
                 .andExpect(jsonPath("$.uhrzeit_bis").value("19:00:00"));
@@ -176,7 +177,10 @@ public class BaustellenbesetzungControllerTest {
     @Test
     @Order(8)
     @Sql(statements = {
-            "DELETE FROM baustellenbesetzung WHERE personalnummer = 1002"
+            "DELETE FROM baustellenbesetzung WHERE id = 5",
+            "DELETE FROM baustellenbesetzung WHERE id = 6",
+            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
+
     })
     void getAllBaustelle_checkNumberOfEntitiesAfterDeletingTestData_mustBe4() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(

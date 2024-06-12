@@ -29,11 +29,14 @@ public class MitarbeiterServiceTest {
         mitarbeiter10.setVorname("Max");
         mitarbeiter10.setNachname("Meier");
         mitarbeiter10.setEmail("maxmeier@email.com");
+        mitarbeiter10.setAdmin(true);
 
         mitarbeiter20.setPersonalnummer(20);
         mitarbeiter20.setVorname("Maria");
         mitarbeiter20.setNachname("Meier");
         mitarbeiter20.setEmail("mariameier@email.com");
+        mitarbeiter20.setAdmin(false);
+
     }
 
     @Test
@@ -82,6 +85,8 @@ public class MitarbeiterServiceTest {
         //assert
         assertThat(actualEntity).isPresent();
         assertEquals(10, actualEntity.get().getPersonalnummer());
+        assertEquals(true, actualEntity.get().getAdmin());
+
     }
 
     @Order(5)
@@ -100,6 +105,7 @@ public class MitarbeiterServiceTest {
         updatedMitarbeiter.setVorname("Max");
         updatedMitarbeiter.setNachname("Müller");
         updatedMitarbeiter.setEmail("maxmueller@email.com");
+        updatedMitarbeiter.setAdmin(true);
         //actual
         var actualId = service.updateMitarbeiter(updatedMitarbeiter);
         var actualEntity = service.getMitarbeiterByPersonalnummer(actualId);

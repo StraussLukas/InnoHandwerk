@@ -14,6 +14,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -42,25 +43,34 @@ public class BaustelleControllerTest {
     @BeforeAll
     void setUp() {
         validBaustelle1.setId(5);
-        validBaustelle1.setName_bauherr("Max Mustermann");
-        validBaustelle1.setAdresse("Musterstraße 1, 12345 Musterstadt");
-        validBaustelle1.setTelefon("+49 123 4567890");
-        validBaustelle1.setEmail("max.mustermann@example.com");
-        validBaustelle1.setArbeitsaufwand(40);
+        validBaustelle1.setTitel("Baustelle 1");
+        validBaustelle1.setName_bauherr("Bauherr1");
+        validBaustelle1.setAdresse("Adresse1");
+        validBaustelle1.setStatus("Erstellt");
+        validBaustelle1.setTelefon("123456789");
+        validBaustelle1.setEmail("bauherr1@example.com");
+        validBaustelle1.setArbeitsaufwand(10);
+        validBaustelle1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
 
         validBaustelle2.setId(6);
-        validBaustelle2.setName_bauherr("Erika Mustermann");
-        validBaustelle2.setAdresse("Beispielweg 2, 54321 Beispielstadt");
-        validBaustelle2.setTelefon("+49 987 6543210");
-        validBaustelle2.setEmail("erika.mustermann@example.com");
-        validBaustelle2.setArbeitsaufwand(35);
+        validBaustelle2.setTitel("Baustelle 2");
+        validBaustelle2.setName_bauherr("Bauherr2");
+        validBaustelle2.setAdresse("Adresse2");
+        validBaustelle2.setStatus("In Arbeit");
+        validBaustelle2.setTelefon("987654321");
+        validBaustelle2.setEmail("bauherr2@example.com");
+        validBaustelle2.setArbeitsaufwand(20);
+        validBaustelle2.setZeitstempel(Timestamp.valueOf("2024-03-21 10:15:45"));
 
         updatedBaustelle2.setId(6);
-        updatedBaustelle2.setName_bauherr("Erika Mustermann");
-        updatedBaustelle2.setAdresse("Beispielweg 2, 54321 Beispielstadt");
-        updatedBaustelle2.setTelefon("+49 987 6543210");
-        updatedBaustelle2.setEmail("erika.mustermann@example.com");
+        updatedBaustelle2.setTitel("Baustelle 2");
+        updatedBaustelle2.setName_bauherr("Bauherr2");
+        updatedBaustelle2.setAdresse("Adresse2");
+        updatedBaustelle2.setStatus("In Arbeit");
+        updatedBaustelle2.setTelefon("987654321");
+        updatedBaustelle2.setEmail("bauherr2@example.com");
         updatedBaustelle2.setArbeitsaufwand(45);
+        updatedBaustelle2.setZeitstempel(Timestamp.valueOf("2024-03-21 10:15:45"));
     }
 
     @Test
@@ -117,18 +127,21 @@ public class BaustelleControllerTest {
     @Order(4)
     void getBaustelleById_whenEntityWithIdFound_ThenOkAndReturnEntity() throws Exception {
         this.mockMvc.perform(
-                        get("/baustelle/" + 1)
+                        get("/baustelle/" + 5)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.name_bauherr").value("Max Mustermann"))
-                .andExpect(jsonPath("$.adresse").value("Musterstraße 1, 12345 Musterstadt"))
-                .andExpect(jsonPath("$.telefon").value("+49 123 4567890"))
-                .andExpect(jsonPath("$.email").value("max.mustermann@example.com"))
-                .andExpect(jsonPath("$.arbeitsaufwand").value(40));
+                .andExpect(jsonPath("$.id").value(5))
+                .andExpect(jsonPath("$.titel").value("Baustelle 1"))
+                .andExpect(jsonPath("$.name_bauherr").value("Bauherr1"))
+                .andExpect(jsonPath("$.adresse").value("Adresse1"))
+                .andExpect(jsonPath("$.status").value("Erstellt"))
+                .andExpect(jsonPath("$.telefon").value("123456789"))
+                .andExpect(jsonPath("$.email").value("bauherr1@example.com"))
+                .andExpect(jsonPath("$.arbeitsaufwand").value(10));
     }
+
 
     @Test
     @Order(5)
@@ -158,10 +171,12 @@ public class BaustelleControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(6))
-                .andExpect(jsonPath("$.name_bauherr").value("Erika Mustermann"))
-                .andExpect(jsonPath("$.adresse").value("Beispielweg 2, 54321 Beispielstadt"))
-                .andExpect(jsonPath("$.telefon").value("+49 987 6543210"))
-                .andExpect(jsonPath("$.email").value("erika.mustermann@example.com"))
+                .andExpect(jsonPath("$.titel").value("Baustelle 2"))
+                .andExpect(jsonPath("$.name_bauherr").value("Bauherr2"))
+                .andExpect(jsonPath("$.adresse").value("Adresse2"))
+                .andExpect(jsonPath("$.status").value("In Arbeit"))
+                .andExpect(jsonPath("$.telefon").value("987654321"))
+                .andExpect(jsonPath("$.email").value("bauherr2@example.com"))
                 .andExpect(jsonPath("$.arbeitsaufwand").value(45));
     }
 

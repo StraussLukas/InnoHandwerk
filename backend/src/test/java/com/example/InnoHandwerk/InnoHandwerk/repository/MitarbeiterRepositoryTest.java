@@ -29,12 +29,13 @@ public class MitarbeiterRepositoryTest {
         mitarbeiterHans.setPersonalnummer(100);
         mitarbeiterHans.setVorname("Hans");
         mitarbeiterHans.setNachname("Mueller");
+        mitarbeiterHans.setAdmin(true);
         repository.saveAndFlush(mitarbeiterHans);
 
         mitarbeiterPeter.setPersonalnummer(200);
         mitarbeiterPeter.setVorname("Peter");
         mitarbeiterPeter.setNachname("Zimmermann");
-        mitarbeiterPeter.setPersonalnummer(2);
+        mitarbeiterHans.setAdmin(false);
         repository.saveAndFlush(mitarbeiterPeter);
     }
 
