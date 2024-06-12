@@ -88,6 +88,7 @@ export class DashboardComponent implements OnInit{
       .subscribe(data => {
         this.mitarbeiterDaten.vorname = data.vorname;
         this.mitarbeiterDaten.nachname = data.nachname;
+        this.mitarbeiterDaten.admin = data.admin;
       }, error => {
         console.error('Fehler beim Laden der Mitarbeiterdaten:', error);
       });
@@ -98,6 +99,7 @@ export class DashboardComponent implements OnInit{
       .subscribe(data => {
         this.mitarbeiterDaten.vorname = data.vorname;
         this.mitarbeiterDaten.nachname = data.nachname;
+        this.mitarbeiterDaten.admin = data.admin;
         console.log('Mitarbeiterdaten:', data);
       }, error => {
         console.error('Fehler beim Laden der Mitarbeiterdaten:', error);

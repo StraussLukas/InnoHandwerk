@@ -12,6 +12,10 @@
   </select>
 
   <button (click)="applyFilter()">Filter anwenden</button>
+  <div  class="admin-buttons" *ngIf="mitarbeiterDaten.admin">
+    <button >Mitarbeiterverwaltung</button>
+    <button >Projekt</button>
+  </div>
 </div>
 
 <div *ngFor="let project of projects" style="margin: 0px 100px">

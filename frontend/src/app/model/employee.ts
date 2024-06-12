@@ -5,4 +5,5 @@ export interface Employee {
   email?: string;
   personalnummer?: number;
   imageRight?: string;
+  admin?: boolean;
 }
