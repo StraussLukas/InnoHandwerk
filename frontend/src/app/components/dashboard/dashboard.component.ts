@@ -1,8 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, OnInit} from '@angular/core';
 import {ProjectInfoTileComponent} from "../shared/project-info-tile/project-info-tile.component";
 import {NgForOf, NgIf} from "@angular/common";
 import {FormsModule} from "@angular/forms";
-
+import {HttpClient} from "@angular/common/http";
+import {ActivatedRoute } from "@angular/router";
+import {Employee} from "../../model/employee";
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -15,7 +17,7 @@ import {FormsModule} from "@angular/forms";
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit{
   projects = [
     {
       image: 'assets/testdaten/baustelle-rohbau-einfamilienhaus-superingo-adobestock.jpg',
@@ -70,6 +72,37 @@ export class DashboardComponent {
 
   employeeNames = ['Tobias Keller', 'Florian Wagner', 'Sebastian Meier', 'Daniel Fischer', 'Andreas Schulze', 'Katrin Hoffmann', 'Laura Becker', 'Julia Neumann', 'Lena Schneider', 'Martina Krüger', 'Thomas Müller', 'Sarah Braun', 'Michael König', 'Anja Richter', 'Lukas Bauer', 'Christina Wolf', 'Patrick Schäfer', 'Sandra Hartmann', 'Kevin Lehmann', 'Claudia Weber']
   statuses = ['In Planung', 'Fertiggestellt', 'Abgeschlossen'];
+  personalnummerUrl!: number | null;
+  mitarbeiterDaten: Employee = {};
+
+  constructor(private client: HttpClient, private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    const parameterFromUrl = this.route.snapshot.paramMap.get('personalnummer');
+    if (parameterFromUrl !== null && !isNaN(+parameterFromUrl)) {
+      this.personalnummerUrl = +parameterFromUrl;
+    } else {
+      this.personalnummerUrl = null;
+    }
+    this.client.get<Employee>(`http://localhost:8080/mitarbeiter/${this.personalnummerUrl}`)
+      .subscribe(data => {
+        this.mitarbeiterDaten.vorname = data.vorname;
+        this.mitarbeiterDaten.nachname = data.nachname;
+      }, error => {
+        console.error('Fehler beim Laden der Mitarbeiterdaten:', error);
+      });
+  }
+
+  loadEmployeeData(personalnummer: string) {
+    this.client.get<Employee>(`http://localhost:8080/mitarbeiter/${personalnummer}`)
+      .subscribe(data => {
+        this.mitarbeiterDaten.vorname = data.vorname;
+        this.mitarbeiterDaten.nachname = data.nachname;
+        console.log('Mitarbeiterdaten:', data);
+      }, error => {
+        console.error('Fehler beim Laden der Mitarbeiterdaten:', error);
+      });
+  }
 
   onFilterTypeChange() {
     this.filterValue = '';
