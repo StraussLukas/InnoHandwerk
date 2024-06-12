@@ -1,16 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface Employee {
-  image: string;
-  name: string;
-  birthday: Date;
-  street: string;
-  zip: string;
-  city: string;
-  accountNumber: string;
-  imageRight: string;
-}
+import {Employee} from "../../../model/employee";
 
 @Component({
   selector: 'app-employee-list',
@@ -24,6 +14,7 @@ export class EmployeeListComponent {
   @Output() employeeDeleted = new EventEmitter<number>();
 
   deleteEmployee(index: number) {
-    this.employeeDeleted.emit(index);
+    const employeeId = this.employees[index].personalnummer;
+    this.employeeDeleted.emit(employeeId);
   }
 }
