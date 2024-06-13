@@ -26,6 +26,7 @@ export class EmployeeAdministrationComponent implements OnInit {
       nachname: ['', Validators.required],
       email: ['', Validators.required],
       personalnummer: ['', Validators.required],
+      isAdmin: [false] // New checkbox field for admin
     });
   }
 
