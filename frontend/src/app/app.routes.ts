@@ -7,7 +7,7 @@ import {EmployeeAdministrationComponent} from "./components/employee-administrat
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'dashboard/:personalnummer', component: DashboardComponent },
-  { path: 'projectdetail/:personalnummer', component: ProjectDetailComponent },
+  { path: 'projectdetail/:personalnummer/:projectid', component: ProjectDetailComponent },
   { path: 'employeeadministration', component: EmployeeAdministrationComponent },
   { path: '**', redirectTo: 'login' }
 ];

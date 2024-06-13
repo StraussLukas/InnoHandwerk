@@ -5,6 +5,8 @@ import {FormsModule} from "@angular/forms";
 import {HttpClient} from "@angular/common/http";
 import {ActivatedRoute } from "@angular/router";
 import {Employee} from "../../model/employee";
+import {ConstructionSite} from "../../model/constructionSite";
+import {ConstructionSiteService} from "../../services/construction-site.service";
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -18,48 +20,7 @@ import {Employee} from "../../model/employee";
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit{
-  projects = [
-    {
-      image: 'assets/testdaten/baustelle-rohbau-einfamilienhaus-superingo-adobestock.jpg',
-      title: 'Rohbau Einfamilienhaus',
-      name: 'Bauprojekt Meier',
-      address: 'Musterstraße 1, 12345 Musterstadt',
-      status: 'In Bearbeitung',
-      employees: ['Max Müller', 'Anna Schmidt', 'Jan Becker']
-    },
-    {
-      image: 'assets/testdaten/baustelle-rohbau-einfamilienhaus-superingo-adobestock.jpg',
-      title: 'Brückenbauprojekt',
-      name: 'Projekt Brücke',
-      address: 'Hauptstraße 15, 23456 Beispielstadt',
-      status: 'Abgeschlossen',
-      employees: ['Lisa König', 'Markus Weber', 'Clara Fischer']
-    },
-    {
-      image: 'asdf',
-      title: 'Bürogebäude Neubau',
-      name: 'Bürozentrum GmbH',
-      address: 'Neubauweg 3, 34567 Neustadt',
-      status: 'In Planung',
-      employees: ['Paul Huber', 'Monika Schulz', 'Peter Hoffmann']
-    },
-    {
-      image: 'assets/testdaten/baustelle-rohbau-einfamilienhaus-superingo-adobestock.jpg',
-      title: 'Torre Eiffel',
-      name: 'Projekt Paris',
-      address: 'Eiffelturm, Paris, Frankreich',
-      status: 'In Planung',
-      employees: ['Jean Dupont', 'Marie Curie', 'Pierre Renard']
-    },
-    {
-      image: 'assets/testdaten/baustelle-rohbau-einfamilienhaus-superingo-adobestock.jpg',
-      title: 'Fitnessstudio',
-      name: 'Sportzentrum AG',
-      address: 'Fitnesstraße 8, 45678 Sportstadt',
-      status: 'Fertiggestellt',
-      employees: ['Lukas Mayer', 'Tina Becker', 'Julia Wagner']
-    }
-  ];
+  projects: ConstructionSite[] = [];
 
   filterType: string = '';
   filterValue: string = '';
@@ -75,7 +36,7 @@ export class DashboardComponent implements OnInit{
   personalnummerUrl!: number | null;
   mitarbeiterDaten: Employee = {};
 
-  constructor(private client: HttpClient, private route: ActivatedRoute) {}
+  constructor(private client: HttpClient, private route: ActivatedRoute, private constructionSiteService: ConstructionSiteService) {}
 
   ngOnInit() {
     const parameterFromUrl = this.route.snapshot.paramMap.get('personalnummer');
@@ -92,18 +53,19 @@ export class DashboardComponent implements OnInit{
       }, error => {
         console.error('Fehler beim Laden der Mitarbeiterdaten:', error);
       });
+
+    this.loadProjects();
   }
 
-  loadEmployeeData(personalnummer: string) {
-    this.client.get<Employee>(`http://localhost:8080/mitarbeiter/${personalnummer}`)
-      .subscribe(data => {
-        this.mitarbeiterDaten.vorname = data.vorname;
-        this.mitarbeiterDaten.nachname = data.nachname;
-        this.mitarbeiterDaten.admin = data.admin;
-        console.log('Mitarbeiterdaten:', data);
-      }, error => {
-        console.error('Fehler beim Laden der Mitarbeiterdaten:', error);
-      });
+  loadProjects() {
+    this.constructionSiteService.getAllConstructionSites().subscribe(
+      (data: ConstructionSite[]) => {
+        this.projects = data;
+      },
+      error => {
+        console.error('Fehler beim Laden der Projekte:', error);
+      }
+    );
   }
 
   onFilterTypeChange() {
