@@ -95,6 +95,17 @@ public class BaustelleRepositoryTest {
         assertThat(actual.get().getArbeitsaufwand()).isEqualTo(30);
     }
 
+    @Test
+    void getAllbyStatus_whenSuccesfull_thenEntityIsNowUpdated(){
+
+        // act
+        var actualEntities = repository.findAllByStatusOrderByZeitstempelAsc("Erstellt");
+        // assert
+        assertThat(actualEntities).hasSize(1);
+        assertThat(actualEntities.get(0).getId()).isEqualTo(1);
+
+    }
+
     @AfterAll
     void tearDown(){
         repository.deleteAll();
