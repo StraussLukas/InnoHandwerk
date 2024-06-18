@@ -1,5 +1,6 @@
 package com.example.InnoHandwerk.InnoHandwerk.controller;
 
+import com.example.InnoHandwerk.InnoHandwerk.entity.Baustellenbesetzung;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -14,6 +15,7 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -25,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("integrationtest")
+@ActiveProfiles("integrationstest")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BaustelleControllerTest {
@@ -39,6 +41,9 @@ public class BaustelleControllerTest {
     private final Baustelle validBaustelle1 = new Baustelle();
     private final Baustelle validBaustelle2 = new Baustelle();
     private final Baustelle updatedBaustelle2 = new Baustelle();
+
+    private final Baustellenbesetzung baustellenbesetzung1 = new Baustellenbesetzung();
+    private final Baustellenbesetzung baustellenbesetzung2 = new Baustellenbesetzung();
 
     @BeforeAll
     void setUp() {
@@ -71,6 +76,18 @@ public class BaustelleControllerTest {
         updatedBaustelle2.setEmail("bauherr2@example.com");
         updatedBaustelle2.setArbeitsaufwand(45);
         updatedBaustelle2.setZeitstempel(Timestamp.valueOf("2024-03-21 10:15:45"));
+
+        baustellenbesetzung1.setPersonalnummer(500);
+        baustellenbesetzung1.setBaustellenId(5);
+        baustellenbesetzung1.setDatum(20230530.0);
+        baustellenbesetzung1.setUhrzeitVon(Time.valueOf("08:00:00"));
+        baustellenbesetzung1.setUhrzeitBis(Time.valueOf("16:00:00"));
+
+        baustellenbesetzung2.setPersonalnummer(500);
+        baustellenbesetzung2.setBaustellenId(6);
+        baustellenbesetzung2.setDatum(20230530.0);
+        baustellenbesetzung2.setUhrzeitVon(Time.valueOf("08:00:00"));
+        baustellenbesetzung2.setUhrzeitBis(Time.valueOf("16:00:00"));
     }
 
     @Test
@@ -142,9 +159,62 @@ public class BaustelleControllerTest {
                 .andExpect(jsonPath("$.arbeitsaufwand").value(10));
     }
 
-
     @Test
     @Order(5)
+    void getAllBaustelleByStatus_whenEntityWithIdFound_ThenOkAndReturnEntity() throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(
+                        get("/baustellenbystatus/"+"Erstellt")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Baustelle> result = objectMapper.readValue(contentAsString, new TypeReference<>() {});
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(5);
+
+    }
+
+    @Order(6)
+    @Test
+    void getAllBaustellenByPersonalnummer_thenReturnEntities() throws Exception {
+
+        ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
+        String body = objectWriter.writeValueAsString(baustellenbesetzung1);
+        this.mockMvc.perform(
+                        post("/baustellenBesetzung")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(body))
+                .andExpect(status().isOk());
+
+        body = objectWriter.writeValueAsString(baustellenbesetzung2);
+        this.mockMvc.perform(
+                        post("/baustellenBesetzung")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(body))
+                .andExpect(status().isOk());
+
+        // actual
+        MvcResult mvcResult = this.mockMvc.perform(
+                        get("/baustellenbypersonalnummer/500")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Baustelle> result = objectMapper.readValue(contentAsString, new TypeReference<>() {});
+
+        // assert
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getId()).isEqualTo(5);
+        assertThat(result.get(1).getId()).isEqualTo(6);
+
+    }
+
+    @Test
+    @Order(7)
     void getBaustelleById_entityWithIdNotFound_thenNotFound() throws Exception {
         this.mockMvc.perform(get("/baustelle/" + 999)
                         .accept(MediaType.APPLICATION_JSON)
@@ -153,7 +223,7 @@ public class BaustelleControllerTest {
     }
 
     @Test
-    @Order(6)
+    @Order(8)
     void putBaustelle_whenModelIsValid_thenStatusOk() throws Exception {
         ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
         String body = objectWriter.writeValueAsString(updatedBaustelle2);
@@ -181,7 +251,7 @@ public class BaustelleControllerTest {
     }
 
     @Test
-    @Order(7)
+    @Order(9)
     void deleteBaustelleById_thenStatusOk() throws Exception {
         this.mockMvc.perform(
                         delete("/baustelle/" + 5)
@@ -192,9 +262,13 @@ public class BaustelleControllerTest {
     }
 
     @Test
-    @Order(8)
+    @Order(10)
     @Sql(statements = {
-            "DELETE FROM baustelle WHERE id = 6"
+            "DELETE FROM baustelle WHERE id = 5",
+            "DELETE FROM baustelle WHERE id = 6",
+            "DELETE FROM baustellenbesetzung WHERE id = 5",
+            "DELETE FROM baustellenbesetzung WHERE id = 6",
+            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
     })
     void getAllBaustelle_checkNumberOfEntitiesAfterDeletingTestData_mustBe4() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(

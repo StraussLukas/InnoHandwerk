@@ -17,7 +17,7 @@ public class BaustelleController {
     BaustelleService service;
 
     @PostMapping(value = "/baustelle")
-    public String addBaustelle(@RequestBody Baustelle baustelle){
+    public Integer addBaustelle(@RequestBody Baustelle baustelle){
         return service.addBaustelle(baustelle);
     }
 
@@ -31,6 +31,16 @@ public class BaustelleController {
         return service.getBaustelleById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found")
         );
+    }
+
+    @GetMapping(value = "/baustellenbypersonalnummer/{personalnummer}")
+    public List<Baustelle> getAllBaustellenByPersonalnummer(@PathVariable Integer personalnummer){
+        return service.getAllBaustellenByPersonalnummer(personalnummer);
+    }
+
+    @GetMapping(value = "/baustellenbystatus/{status}")
+    public List<Baustelle> getAllBaustellenByPersonalnummer(@PathVariable String status){
+        return service.getAllBaustellenByStatus(status);
     }
 
     @PutMapping(value = "/baustelle")

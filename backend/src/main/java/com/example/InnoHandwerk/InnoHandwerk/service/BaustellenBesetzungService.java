@@ -30,6 +30,10 @@ public class BaustellenBesetzungService {
         return repository.save(baustellenBesetzung).getId();
     }
 
+    public List<Integer> getAllBaustellenIdsByPersonalnummer(Integer personalnummer){
+        return repository.findDistinctBaustellenIdsByPersonalnummer(personalnummer);
+    }
+
     public void deleteBaustellenBesetzungById(Integer id) {
         repository.deleteById(id);
     }
