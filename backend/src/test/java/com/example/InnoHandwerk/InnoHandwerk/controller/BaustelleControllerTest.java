@@ -175,7 +175,7 @@ public class BaustelleControllerTest {
 
     }
 
-    @Order(5)
+    @Order(6)
     @Test
     void getAllBaustellenByPersonalnummer_thenReturnEntities() throws Exception {
 
