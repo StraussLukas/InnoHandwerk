@@ -16,11 +16,11 @@ public class BeitragService {
     public Optional<Beitrag> getBeitragById(Integer id) {
         return repository.findById(id);
     }
-    public List<Beitrag> getAllBeitrag() {
+    public List<Beitrag> getAllBeitraege() {
         return repository.findAll();
     }
 
-    public List<Beitrag> getAllBeitragByBaustellenId(Integer baustellenId) {
+    public List<Beitrag> getAllBeitraegeByBaustellenId(Integer baustellenId) {
            return repository.findAllByBaustelleIdEquals(baustellenId);
     }
 

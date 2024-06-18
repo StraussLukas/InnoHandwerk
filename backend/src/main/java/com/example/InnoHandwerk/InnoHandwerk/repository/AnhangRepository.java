@@ -9,4 +9,5 @@ import java.util.List;
 public interface AnhangRepository extends JpaRepository<Anhang, Integer> {
     List<Anhang> findAllByBeitragIdEquals(int beitragId);
     void deleteAllByBeitragIdEquals(Integer id);
+    Anhang findTopByOrderByIdDesc();
 }

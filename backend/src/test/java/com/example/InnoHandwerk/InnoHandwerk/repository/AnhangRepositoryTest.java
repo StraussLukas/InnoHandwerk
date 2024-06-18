@@ -115,6 +115,17 @@ public class AnhangRepositoryTest {
         assertThat(repository.findById(anhang3.getId()).isPresent());
     }
 
+    @Test
+    void findTopByOrderByIdDesc_thenResultThenResultHasCertainID(){
+        // arrange
+        int expectedSize = 1;
+        // act
+        var actual = repository.findTopByOrderByIdDesc();
+        // assert
+        assertThat(actual).isNotNull();
+        assertThat(actual.getId()).isEqualTo(-1);
+    }
+
     @AfterAll
     void tearTown(){
         repository.deleteAll();

@@ -252,9 +252,14 @@ public class BaustelleControllerTest {
 
     @Test
     @Order(9)
+    @Sql(statements = {
+            "DELETE FROM baustellenbesetzung WHERE id = 5",
+            "DELETE FROM baustellenbesetzung WHERE id = 6",
+            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
+    })
     void deleteBaustelleById_thenStatusOk() throws Exception {
         this.mockMvc.perform(
-                        delete("/baustelle/" + 5)
+                        delete("/baustelle/" + 6)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -265,10 +270,7 @@ public class BaustelleControllerTest {
     @Order(10)
     @Sql(statements = {
             "DELETE FROM baustelle WHERE id = 5",
-            "DELETE FROM baustelle WHERE id = 6",
-            "DELETE FROM baustellenbesetzung WHERE id = 5",
-            "DELETE FROM baustellenbesetzung WHERE id = 6",
-            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
+            "DELETE FROM baustelle WHERE id = 6"
     })
     void getAllBaustelle_checkNumberOfEntitiesAfterDeletingTestData_mustBe4() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(
