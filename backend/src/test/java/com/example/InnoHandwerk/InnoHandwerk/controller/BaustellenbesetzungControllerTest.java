@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ActiveProfiles("integrationtest")
+@ActiveProfiles("integrationstest")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BaustellenbesetzungControllerTest {
@@ -45,21 +45,21 @@ public class BaustellenbesetzungControllerTest {
         validBaustellenbesetzung1.setPersonalnummer(100);
         validBaustellenbesetzung1.setBaustellen_id(3);
         validBaustellenbesetzung1.setDatum(20230530.0);
-        validBaustellenbesetzung1.setUhrzeit_von(Time.valueOf("08:00:00"));
-        validBaustellenbesetzung1.setUhrzeit_bis(Time.valueOf("17:00:00"));
+        validBaustellenbesetzung1.setUhrzeitVon(Time.valueOf("08:00:00"));
+        validBaustellenbesetzung1.setUhrzeitBis(Time.valueOf("17:00:00"));
 
         validBaustellenbesetzung2.setPersonalnummer(200);
         validBaustellenbesetzung2.setBaustellen_id(4);
         validBaustellenbesetzung2.setDatum(20230530.0);
-        validBaustellenbesetzung2.setUhrzeit_von(Time.valueOf("09:00:00"));
-        validBaustellenbesetzung2.setUhrzeit_bis(Time.valueOf("18:00:00"));
+        validBaustellenbesetzung2.setUhrzeitVon(Time.valueOf("09:00:00"));
+        validBaustellenbesetzung2.setUhrzeitBis(Time.valueOf("18:00:00"));
 
         updatedBaustellenbesetzung2.setId(6);
         updatedBaustellenbesetzung2.setPersonalnummer(200);
         updatedBaustellenbesetzung2.setBaustellen_id(1);
         updatedBaustellenbesetzung2.setDatum(20230530.0);
-        updatedBaustellenbesetzung2.setUhrzeit_von(Time.valueOf("10:00:00"));
-        updatedBaustellenbesetzung2.setUhrzeit_bis(Time.valueOf("19:00:00"));
+        updatedBaustellenbesetzung2.setUhrzeitVon(Time.valueOf("10:00:00"));
+        updatedBaustellenbesetzung2.setUhrzeitBis(Time.valueOf("19:00:00"));
     }
 
     @Test
@@ -125,8 +125,8 @@ public class BaustellenbesetzungControllerTest {
                 .andExpect(jsonPath("$.personalnummer").value(100))
                 .andExpect(jsonPath("$.baustellen_id").value(3))
                 .andExpect(jsonPath("$.datum").value(20230530.0))
-                .andExpect(jsonPath("$.uhrzeit_von").value("08:00:00"))
-                .andExpect(jsonPath("$.uhrzeit_bis").value("17:00:00"));
+                .andExpect(jsonPath("$.uhrzeitVon").value("08:00:00"))
+                .andExpect(jsonPath("$.uhrzeitBis").value("17:00:00"));
     }
 
     @Test
@@ -159,8 +159,8 @@ public class BaustellenbesetzungControllerTest {
                 .andExpect(jsonPath("$.personalnummer").value(200))
                 .andExpect(jsonPath("$.baustellen_id").value(1))
                 .andExpect(jsonPath("$.datum").value(20230530.0))
-                .andExpect(jsonPath("$.uhrzeit_von").value("10:00:00"))
-                .andExpect(jsonPath("$.uhrzeit_bis").value("19:00:00"));
+                .andExpect(jsonPath("$.uhrzeitVon").value("10:00:00"))
+                .andExpect(jsonPath("$.uhrzeitBis").value("19:00:00"));
     }
 
     @Test

@@ -64,9 +64,10 @@
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
 				<configuration>
-					<url>jdbc:h2:file:./src/main/resources/db/h2.database</url>
+					<url>jdbc:h2:file:./backend/src/main/resources/db/prod-db</url>
 					<user>sa</user>
 					<password>password</password>
+					<workingDirectory>./backend</workingDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
