@@ -2,17 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EmployeeListComponent } from '../shared/employee-list/employee-list.component';
-
-interface Employee {
-  image: string;
-  name: string;
-  birthday: Date;
-  street: string;
-  zip: string;
-  city: string;
-  accountNumber: string;
-  imageRight: string;
-}
+import { HttpClient } from '@angular/common/http';
+import { Employee } from "../../model/employee";
 
 @Component({
   selector: 'app-employee-administration',
@@ -21,7 +12,7 @@ interface Employee {
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, EmployeeListComponent]
 })
-export class EmployeeAdministrationComponent implements OnInit{
+export class EmployeeAdministrationComponent implements OnInit {
   showModal = false;
   employeeForm: FormGroup;
   formSubmitted = false;
@@ -29,34 +20,33 @@ export class EmployeeAdministrationComponent implements OnInit{
   selectedFile: File | null = null;
   employees: Employee[] = [];
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private http: HttpClient) {
     this.employeeForm = this.fb.group({
-      name: ['', Validators.required],
-      birthday: ['', Validators.required],
-      street: ['', Validators.required],
-      zip: ['', Validators.required],
-      city: ['', Validators.required],
-      accountNumber: ['', Validators.required]
+      vorname: ['', Validators.required],
+      nachname: ['', Validators.required],
+      email: ['', Validators.required],
+      personalnummer: ['', Validators.required],
     });
   }
 
-
   ngOnInit() {
-    this.addDefaultEmployee();
+    this.fetchEmployees();
   }
 
-  addDefaultEmployee() {
-    const defaultEmployee: Employee = {
-      image: '',
-      name: 'John Doe',
-      birthday: new Date('1990-01-01'),
-      street: 'Musterstraße 1',
-      zip: '12345',
-      city: 'Musterstadt',
-      accountNumber: 'DE1234567890',
-      imageRight: '../../assets/trash-can.png'
-    };
-    this.employees.push(defaultEmployee);
+  async fetchEmployees() {
+    const employeeApiUrl = 'http://localhost:8080/mitarbeiter';
+    const imageRightPath = '../../assets/trash-can.png';
+
+    try {
+      const response = await fetch(employeeApiUrl);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data: Employee[] = await response.json();
+      this.employees = data.map(employee => ({ ...employee, imageRight: imageRightPath }));
+    } catch (error) {
+      console.error('Error fetching employees:', error);
+    }
   }
 
   openModal() {
@@ -78,6 +68,7 @@ export class EmployeeAdministrationComponent implements OnInit{
       const reader = new FileReader();
       reader.onload = () => {
         this.imagePreview = reader.result;
+        this.employeeForm.patchValue({ image: this.imagePreview as string });
       };
       reader.readAsDataURL(file);
     }
@@ -97,17 +88,22 @@ export class EmployeeAdministrationComponent implements OnInit{
       const reader = new FileReader();
       reader.onload = () => {
         this.imagePreview = reader.result;
+        this.employeeForm.patchValue({ image: this.imagePreview as string });
       };
       reader.readAsDataURL(file);
     }
   }
 
   addEmployee() {
-    console.log ("Aufruf erfolgreich)")
+    console.log("Aufruf erfolgreich");
     this.formSubmitted = true;
     if (this.employeeForm.valid) {
-      const newEmployee = { ...this.employeeForm.value, image: this.imagePreview as string, imageRight: '../../assets/trash-can.png' };
+      const newEmployee = {
+        ...this.employeeForm.value,
+        imageRight: '../../assets/trash-can.png'
+      };
       this.employees.push(newEmployee);
+      this.sendEmployeeToBackend(newEmployee);
       this.closeModal();
     } else {
       console.log("Formular ungültig");
@@ -115,7 +111,37 @@ export class EmployeeAdministrationComponent implements OnInit{
     }
   }
 
-  onEmployeeDeleted(index: number) {
-    this.employees.splice(index, 1);
+  onEmployeeDeleted(employeeId: number) {
+    const index = this.employees.findIndex(employee => employee.personalnummer === employeeId);
+    if (index > -1) {
+      this.deleteEmployeeFromBackend(employeeId);
+      this.employees.splice(index, 1);
+    }
+  }
+
+  deleteEmployeeFromBackend(employeeId: number) {
+    const employeeApiUrl = `http://localhost:8080/mitarbeiter/${employeeId}`;
+    this.http.delete(employeeApiUrl).subscribe(
+      (response: any) => {
+        console.log('Employee successfully deleted from backend', response);
+      },
+      (error: any) => {
+        console.error('Error deleting employee from backend', error);
+      }
+    );
+  }
+
+  sendEmployeeToBackend(employee: Partial<Employee>) {
+    const employeeApiUrl = 'http://localhost:8080/mitarbeiter';
+    const { image, ...employeeData } = employee;
+
+    this.http.post(employeeApiUrl, employeeData).subscribe(
+      (response: any) => {
+        console.log('Employee successfully sent to backend', response);
+      },
+      (error: any) => {
+        console.error('Error sending employee to backend', error);
+      }
+    );
   }
 }

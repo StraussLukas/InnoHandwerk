@@ -1,6 +1,5 @@
 spring:
-  profiles:
-    active: default
+
   datasource:
     url: jdbc:h2:file:./backend/src/main/resources/db/prod-db
     username: sa
