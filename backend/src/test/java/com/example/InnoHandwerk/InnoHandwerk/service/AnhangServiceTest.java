@@ -2,6 +2,8 @@
 package com.example.InnoHandwerk.InnoHandwerk.service;
 
 import com.example.InnoHandwerk.InnoHandwerk.entity.Anhang;
+import com.example.InnoHandwerk.InnoHandwerk.entity.Beitrag;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -10,30 +12,47 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 
+import java.sql.Timestamp;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-@ActiveProfiles("integrationtest")
+@ActiveProfiles("integrationstest")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AnhangServiceTest {
 
     @Autowired
     private AnhangService anhangService;
+    @Autowired
+    private BeitragService beitragService;
 
     private final Anhang anhang1 = new Anhang();
     private final Anhang anhang2 = new Anhang();
+    private final Beitrag beitrag = new Beitrag();
 
     @BeforeAll
     void setUp() {
+
+        beitrag.setId(-1);
+        beitrag.setFreitext("text1");
+        beitrag.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
+        beitrag.setBaustelleId(1);
+        beitrag.setPersonalnummer(100);
+
+        beitragService.addBeitrag(beitrag);
+
+
         anhang1.setId(-1);
         anhang1.setDatei("path1");
-        anhang1.setBeitragId(5);
+        anhang1.setBeitragId(-1);
 
         anhang2.setId(-2);
         anhang2.setDatei("path2");
-        anhang2.setBeitragId(4);
+        anhang2.setBeitragId(-1);
+
+
     }
 
     @Test
@@ -81,7 +100,7 @@ public class AnhangServiceTest {
         var actualEntity = anhangService.getAnhangById(-1);
         //assert
         assertThat(actualEntity).isPresent();
-        assertEquals(5, actualEntity.get().getBeitragId());
+        assertEquals(-1, actualEntity.get().getBeitragId());
     }
 
     @Order(5)
@@ -115,7 +134,7 @@ public class AnhangServiceTest {
         var actual = anhangService.getAllAnhaengeByBeitragId(4);
         //assert
         assertThat(actual).isNotEmpty();
-        assertThat(actual).hasSize(3);
+        assertThat(actual).hasSize(2);
     }
 
     @Order(8)
@@ -139,22 +158,38 @@ public class AnhangServiceTest {
 
     @Order(10)
     @Test
+    @Transactional
     void deleteAnhangByBaustellenId_whenExcuted_thenNumberOfEntitiesmustBe5() {
         //arrange
-        var expectedEntities = 5;
+        var expectedEntities = 4;
         // act
-        anhangService.deleteAllAnhaengeByBeitragId(-20);
+        anhangService.deleteAllAnhaengeByBeitragId(4);
         var actualEntities = anhangService.getAllAnhaenge();
         // assert
-        assertThat(anhangService.getAllAnhaengeByBeitragId(-20)).isEmpty();
+        assertThat(anhangService.getAllAnhaengeByBeitragId(4)).isEmpty();
         assertEquals(expectedEntities, actualEntities.size());
     }
 
     @Order(11)
     @Test
+    void addAnhangRefactored_whenExcuted_thenNumberOfEntitiesmustBe6(){
+        // arrange
+        var expectedEntities = 6;
+        // act
+        anhangService.addAnhangRefactored(4);
+        // assert
+        assertThat(anhangService.getAllAnhaenge()).hasSize(expectedEntities);
+        anhangService.deleteAnhangById(6);
+    }
+
+
+    @Order(12)
+    @Test
     @Sql(statements = {
             "DELETE FROM anhang WHERE id = '-1'",
-            "DELETE FROM anhang WHERE id = '-2'"
+            "DELETE FROM anhang WHERE id = '-2'",
+            "DELETE FROM anhang WHERE id = '6'",
+            "DELETE FROM beitrag WHERE id = '-1'"
     })
     void getAllAnhaenge_checkNumberOfEntitiesAfterDeletingTestData_must5() {
         //arrange

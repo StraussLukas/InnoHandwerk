@@ -39,4 +39,16 @@ public class AnhangService {
     public Integer updateAnhang(Anhang anhang) {
         return repository.save(anhang).getId();
     }
+
+    public String addAnhangRefactored(Integer beitragId) {
+
+        Integer newId = repository.findTopByOrderByIdDesc().getId() + 1;
+        String datei = "../db/files/pic" + newId + ".png";
+
+        Anhang anhang = new Anhang(newId, datei, beitragId);
+
+        repository.save(anhang);
+
+        return datei;
+    }
 }

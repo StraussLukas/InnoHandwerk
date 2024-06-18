@@ -5,5 +5,7 @@ CREATE TABLE baustellenbesetzung(
                           baustellen_id INTEGER NOT NULL,
                           datum DOUBLE NOT NULL,
                           uhrzeit_von TIME NOT NULL,
-                          uhrzeit_bis TIME NOT NULL
+                          uhrzeit_bis TIME NOT NULL,
+                          FOREIGN KEY (personalnummer) REFERENCES mitarbeiter(personalnummer),
+                          FOREIGN KEY (baustellen_id) REFERENCES baustelle(id)
 );

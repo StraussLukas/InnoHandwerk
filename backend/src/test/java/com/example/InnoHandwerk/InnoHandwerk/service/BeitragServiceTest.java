@@ -1,6 +1,9 @@
 package com.example.InnoHandwerk.InnoHandwerk.service;
 
+import com.example.InnoHandwerk.InnoHandwerk.entity.Baustelle;
 import com.example.InnoHandwerk.InnoHandwerk.entity.Beitrag;
+import com.example.InnoHandwerk.InnoHandwerk.repository.BaustelleRepository;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -15,30 +18,46 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-@ActiveProfiles("integrationtest")
+@ActiveProfiles("integrationstest")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BeitragServiceTest {
 
     @Autowired
     private BeitragService beitragService;
+    @Autowired
+    private  BaustelleService baustelleService;
 
     private final Beitrag beitrag1 = new Beitrag();
     private final Beitrag beitrag2 = new Beitrag();
+    private final Baustelle baustelle = new Baustelle();
 
     @BeforeAll
     void setUp() {
+        baustelle.setId(-1);
+        baustelle.setTitel("Baustelle 1");
+        baustelle.setName_bauherr("Bauherr1");
+        baustelle.setAdresse("Adresse1");
+        baustelle.setStatus("Erstellt");
+        baustelle.setTelefon("123456789");
+        baustelle.setEmail("bauherr1@example.com");
+        baustelle.setArbeitsaufwand(10);
+        baustelle.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
+
+
+        baustelleService.addBaustelle(baustelle);
+
         beitrag1.setId(-1);
         beitrag1.setFreitext("text1");
         beitrag1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
-        beitrag1.setBaustelleId(-10);
-        beitrag1.setPersonalnummer(-10);
+        beitrag1.setBaustelleId(-1);
+        beitrag1.setPersonalnummer(100);
 
         beitrag2.setId(-2);
         beitrag2.setFreitext("text2");
         beitrag2.setZeitstempel(Timestamp.valueOf("2024-07-14 14:30:00"));
-        beitrag2.setBaustelleId(-20);
-        beitrag2.setPersonalnummer(-10);
+        beitrag2.setBaustelleId(-1);
+        beitrag2.setPersonalnummer(100);
     }
 
     @Test
@@ -52,7 +71,7 @@ public class BeitragServiceTest {
         //arrange
         var expectedEntities = 5;
         //actual
-        var actualEntities = beitragService.getAllBeitrag();
+        var actualEntities = beitragService.getAllBeitraege();
         //assert
         assertEquals(expectedEntities, actualEntities.size());
     }
@@ -74,7 +93,7 @@ public class BeitragServiceTest {
         //arrange
         var expectedEntities = 7;
         //actual
-        var actualEntities = beitragService.getAllBeitrag();
+        var actualEntities = beitragService.getAllBeitraege();
         //assert
         assertEquals(expectedEntities, actualEntities.size());
     }
@@ -86,7 +105,7 @@ public class BeitragServiceTest {
         var actualEntity = beitragService.getBeitragById(-1);
         //assert
         assertThat(actualEntity).isPresent();
-        assertEquals(-10, actualEntity.get().getBaustelleId());
+        assertEquals(-1, actualEntity.get().getBaustelleId());
     }
 
     @Order(5)
@@ -102,24 +121,24 @@ public class BeitragServiceTest {
         //arrange
         var updatedBeitrag = new Beitrag();
         updatedBeitrag.setId(-1);
-        updatedBeitrag.setFreitext("text1");
+        updatedBeitrag.setFreitext("text3");
         updatedBeitrag.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
-        updatedBeitrag.setBaustelleId(-30);
-        updatedBeitrag.setPersonalnummer(-10);
+        updatedBeitrag.setBaustelleId(-1);
+        updatedBeitrag.setPersonalnummer(100);
         //actual
         var actualId = beitragService.updateBeitrag(updatedBeitrag);
         var actualEntity = beitragService.getBeitragById(actualId);
         //assert
         assertThat(actualId).isEqualTo(-1);
         assertThat(actualEntity).isPresent();
-        assertThat(actualEntity.get().getBaustelleId()).isEqualTo(-30);
+        assertThat(actualEntity.get().getFreitext()).isEqualTo("text3");
     }
 
     @Order(7)
     @Test
     void getBeitraegeByBaustellenId_whenFound_thenReturnListofBeitraege() {
         //actual
-        var actual = beitragService.getAllBeitragByBaustellenId(-20);
+        var actual = beitragService.getAllBeitraegeByBaustellenId(2);
         //assert
         assertThat(actual).isNotEmpty();
         assertThat(actual).hasSize(1);
@@ -129,7 +148,7 @@ public class BeitragServiceTest {
     @Test
     void getBeitraegeByBaustellenId_whenFound_thenReturnEmptyListofBeitraege() {
         //actual
-        var actual = beitragService.getAllBeitragByBaustellenId(-100);
+        var actual = beitragService.getAllBeitraegeByBaustellenId(-100);
         //assert
         assertThat(actual).isEmpty();
     }
@@ -146,28 +165,31 @@ public class BeitragServiceTest {
 
     @Order(10)
     @Test
+    @Transactional
     void deleteBeitraegeByBaustellenId_whenExcuted_thenNumberOfEntitiesmustBe5() {
         //arrange
         var expectedEntities = 5;
         // act
-        beitragService.deleteAllBeitragByBaustellenId(-20);
-        var actualEntities = beitragService.getAllBeitrag();
+        beitragService.deleteAllBeitragByBaustellenId(-1);
+        var actualEntities = beitragService.getAllBeitraege();
         // assert
-        assertThat(beitragService.getAllBeitragByBaustellenId(-20)).isEmpty();
+        assertThat(beitragService.getAllBeitraegeByBaustellenId(-1)).isEmpty();
         assertEquals(expectedEntities, actualEntities.size());
+
     }
 
     @Order(11)
     @Test
     @Sql(statements = {
             "DELETE FROM beitrag WHERE id = '-1'",
-            "DELETE FROM beitrag WHERE id = '-2'"
+            "DELETE FROM beitrag WHERE id = '-2'",
+            "DELETE FROM baustelle WHERE id = '-1'"
     })
     void getAllBeitraege_checkNumberOfEntitiesAfterDeletingTestData_must5() {
         //arrange
         var expectedEntities = 5;
         //actual
-        var actualEntities = beitragService.getAllBeitrag();
+        var actualEntities = beitragService.getAllBeitraege();
         //assert
         assertEquals(expectedEntities, actualEntities.size());
     }

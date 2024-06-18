@@ -26,8 +26,8 @@ public class Baustellenbesetzung {
     )
     private Integer id;
     private Integer personalnummer;
-    private Integer baustellen_id;
+    private Integer baustellenId;
     private Double datum;
-    private Time uhrzeit_von;
-    private Time uhrzeit_bis;
+    private Time uhrzeitVon;
+    private Time uhrzeitBis;
 }

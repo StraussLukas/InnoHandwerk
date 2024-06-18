@@ -14,12 +14,19 @@ public class BaustelleService {
     @Autowired
     BaustelleRepository repository;
 
-    public String addBaustelle(Baustelle baustelle) {
-        return repository.save(baustelle).getId().toString();
+    @Autowired
+    BaustellenBesetzungService baustellenBesetzungService;
+
+    public Integer addBaustelle(Baustelle baustelle) {
+        return repository.save(baustelle).getId();
     }
 
     public List<Baustelle> getAllBaustelle() {
         return repository.findAll();
+    }
+
+    public List<Baustelle> getAllBaustellenByPersonalnummer(Integer personalnummer) {
+        return repository.findAllById(baustellenBesetzungService.getAllBaustellenIdsByPersonalnummer(personalnummer));
     }
 
     public Optional<Baustelle> getBaustelleById(Integer id) {
@@ -32,5 +39,9 @@ public class BaustelleService {
 
     public void deleteBaustelleById(Integer id) {
         repository.deleteById(id);
+    }
+
+    public List<Baustelle> getAllBaustellenByStatus(String status){
+        return repository.findAllByStatusOrderByZeitstempelAsc(status);
     }
 }

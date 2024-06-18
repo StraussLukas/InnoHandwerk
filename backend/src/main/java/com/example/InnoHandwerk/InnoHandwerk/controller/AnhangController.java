@@ -15,6 +15,10 @@ import java.util.List;
 @CrossOrigin(origins = "http://localhost:4200", maxAge = 3600)
 public class AnhangController {
 
+    public AnhangController() {
+        super();
+    }
+
     @Autowired
     AnhangService service;
 
@@ -37,6 +41,11 @@ public class AnhangController {
     @PostMapping(value = "/anhang")
     public Integer addAnhang(@RequestBody Anhang anhang){
         return service.addAnhang(anhang);
+    }
+
+    @PostMapping(value = "/anhang/{beitragId}")
+    public String addAnhangRefactored(@PathVariable Integer beitragId){
+        return service.addAnhangRefactored(beitragId);
     }
 
     @PutMapping(value = "/anhang")

@@ -1,20 +1,23 @@
 package com.example.InnoHandwerk.InnoHandwerk.service;
 
 import com.example.InnoHandwerk.InnoHandwerk.entity.Baustelle;
+import com.example.InnoHandwerk.InnoHandwerk.entity.Baustellenbesetzung;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
-@ActiveProfiles("integrationtest")
+@ActiveProfiles("integrationstest")
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class BaustelleServiceTest {
@@ -22,8 +25,15 @@ public class BaustelleServiceTest {
     @Autowired
     private BaustelleService service;
 
+    @Autowired
+    private BaustellenBesetzungService baustellenBesetzungService;
+
     private final Baustelle baustelle1 = new Baustelle();
     private final Baustelle baustelle2 = new Baustelle();
+    private final Baustellenbesetzung baustellenbesetzung1 = new Baustellenbesetzung();
+    private final Baustellenbesetzung baustellenbesetzung2 = new Baustellenbesetzung();
+
+
 
     @BeforeAll
     void setUp() {
@@ -46,6 +56,18 @@ public class BaustelleServiceTest {
         baustelle2.setEmail("bauherr2@example.com");
         baustelle2.setArbeitsaufwand(20);
         baustelle2.setZeitstempel(Timestamp.valueOf("2024-03-21 10:15:45"));
+
+        baustellenbesetzung1.setPersonalnummer(500);
+        baustellenbesetzung1.setBaustellenId(5);
+        baustellenbesetzung1.setDatum(20230530.0);
+        baustellenbesetzung1.setUhrzeitVon(Time.valueOf("08:00:00"));
+        baustellenbesetzung1.setUhrzeitBis(Time.valueOf("16:00:00"));
+
+        baustellenbesetzung2.setPersonalnummer(500);
+        baustellenbesetzung2.setBaustellenId(6);
+        baustellenbesetzung2.setDatum(20230530.0);
+        baustellenbesetzung2.setUhrzeitVon(Time.valueOf("08:00:00"));
+        baustellenbesetzung2.setUhrzeitBis(Time.valueOf("16:00:00"));
     }
 
     @Test
@@ -69,8 +91,8 @@ public class BaustelleServiceTest {
         var actualId1 = service.addBaustelle(baustelle1);
         var actualId2 = service.addBaustelle(baustelle2);
         // assert
-        assertEquals("5", actualId1);
-        assertEquals("6", actualId2);
+        assertEquals(5, actualId1);
+        assertEquals(6, actualId2);
     }
 
     @Order(3)
@@ -94,12 +116,39 @@ public class BaustelleServiceTest {
 
     @Order(5)
     @Test
+    void getAllBaustellenByPersonalnummer_thenReturnEntities() {
+        baustellenBesetzungService.addBaustellenBesetzung(baustellenbesetzung1);
+        baustellenBesetzungService.addBaustellenBesetzung(baustellenbesetzung2);
+
+        // actual
+        var actualEntity = service.getAllBaustellenByPersonalnummer(500);
+        // assert
+        assertThat(actualEntity).hasSize(2);
+        assertThat(actualEntity.get(0).getId()).isEqualTo(5);
+        assertThat(actualEntity.get(1).getId()).isEqualTo(6);
+
+    }
+
+    @Order(5)
+    @Test
+    void getAllBaustellenByStatus_thenReturnEntities() {
+             // actual
+        var actualEntities = service.getAllBaustellenByStatus("Erstellt");
+        // assert
+        assertThat(actualEntities).hasSize(2);
+        assertThat(actualEntities.get(0).getId()).isEqualTo(5);
+
+    }
+
+
+    @Order(7)
+    @Test
     void getBaustelleById_whenEntityNotExists_thenReturnThrowException() {
         // assert
         assertThat(service.getBaustelleById(100)).isNotPresent();
     }
 
-    @Order(6)
+    @Order(8)
     @Test
     void updateBaustelle_whenValidModel_thenReturnEntityId() {
         // arrange
@@ -113,8 +162,30 @@ public class BaustelleServiceTest {
         assertEquals("UpdatedBauherr", actualEntity.getName_bauherr());
     }
 
-    @Order(7)
+    @Order(9)
     @Test
+    void getBaustellenByPersonalnummer_whenEntityExists_thenReturnList() {
+        // actual
+        List<Baustelle> actualEntities = service.getAllBaustellenByPersonalnummer(100);
+        // assert
+        assertThat(actualEntities).isNotEmpty();
+        assertEquals(2, actualEntities.size());
+        assertThat(actualEntities.get(0).getId()).isEqualTo(1);
+        assertThat(actualEntities.get(1).getId()).isEqualTo(2);
+
+    }
+
+
+
+    @Order(10)
+    @Test
+    @Sql(statements = {
+            "DELETE FROM baustellenbesetzung WHERE id = 5",
+            "DELETE FROM baustellenbesetzung WHERE id = 6",
+            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
+
+
+    })
     void deleteBaustelleById_whenSuccessful_thenSizeMustBe5() {
         // actual
         service.deleteBaustelleById(5);
@@ -123,9 +194,12 @@ public class BaustelleServiceTest {
         assertEquals(5, actualEntities.size());
     }
 
-    @Order(8)
+
+
+    @Order(11)
     @Test
     @Sql(statements = {
+            "DELETE FROM baustelle WHERE id = 5",
             "DELETE FROM baustelle WHERE id = 6"
     })
     void getAllBaustelle_checkNumberOfEntitiesAfterDeletingTestData_mustBe4() {
