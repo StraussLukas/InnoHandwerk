@@ -1,49 +1,127 @@
-import {Component, ElementRef, ViewChild} from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { ProjectInfoTileComponent } from '../shared/project-info-tile/project-info-tile.component';
 import { ChatMessageComponent } from '../shared/chat-message/chat-message.component';
 import { CommonModule } from '@angular/common';
-import {FormsModule} from "@angular/forms";
+import { Employee } from '../../model/employee';
+import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { Observable, forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { ActivatedRoute } from '@angular/router';
+import { ConstructionSite } from '../../model/constructionSite';
+
+export interface Beitrag {
+  id?: number;
+  freitext?: string;
+  baustelleId?: number;
+  personalnummer?: number;
+  zeitstempel?: string;
+}
 
 @Component({
   selector: 'app-project-detail',
   standalone: true,
   imports: [ProjectInfoTileComponent, ChatMessageComponent, CommonModule, FormsModule],
   templateUrl: './project-detail.component.html',
-  styleUrl: './project-detail.component.css'
+  styleUrls: ['./project-detail.component.css']
 })
-export class ProjectDetailComponent {
-  project = {
-    image: 'assets/testdaten/baustelle-rohbau-einfamilienhaus-superingo-adobestock.jpg',
-    title: 'Rohbau Einfamilienhaus',
-    name: 'Bauprojekt Meier',
-    address: 'Musterstraße 1, 12345 Musterstadt',
-    status: 'In Bearbeitung',
-    employees: ['Max Müller', 'Anna Schmidt', 'Jan Becker']
-  };
-
-  messages = [
-    { text: 'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.  Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi. Nam liber tempor cum soluta nobis eleifend option congue nihil imperdiet doming id quod mazim placerat facer', timestamp: new Date(), user: 'Max Müller', images: ['assets/testdaten/baustelle-rohbau-einfamilienhaus-superingo-adobestock.jpg','assets/testdaten/fertighausexperte.jpg'] },
-    { text: 'Zweiter Kommentar', timestamp: new Date(), user: 'Anna Schmidt', images: [] }
-  ];
-
+export class ProjectDetailComponent implements OnInit {
+  project: ConstructionSite = {};
+  messages: { text: string, timestamp: Date, user: string, images: string[] }[] = [];
   newMessage: string = '';
   selectedFiles: File[] = [];
+  projectIDUrl?: number | null;
+  personalnummerUrl!: number | null;
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
+  constructor(private client: HttpClient, private route: ActivatedRoute) {}
+
+  ngOnInit() {
+    const parameterFromUrl = this.route.snapshot.paramMap.get('projectid');
+    if (parameterFromUrl !== null && !isNaN(+parameterFromUrl)) {
+      this.projectIDUrl = +parameterFromUrl;
+    } else {
+      this.projectIDUrl = null;
+    }
+
+    if (this.projectIDUrl !== null) {
+      const projectUrl = `http://localhost:8080/baustelle/${this.projectIDUrl}`;
+      console.log('Loading project from URL:', projectUrl);
+      this.client.get<ConstructionSite>(projectUrl)
+        .subscribe(data => {
+          this.project = data;
+        }, error => {
+          console.error('Fehler beim Laden der Baustelle:', error);
+        });
+
+      this.loadMessages(this.projectIDUrl);
+    }
+  }
+
+  loadEmployeeData(personalnummer: number): Observable<Employee> {
+    return this.client.get<Employee>(`http://localhost:8080/mitarbeiter/${personalnummer}`).pipe(
+      catchError(error => {
+        console.error('Fehler beim Laden der Mitarbeiterdaten:', error);
+        return of({ vorname: 'Unbekannt', nachname: '' } as Employee);
+      })
+    );
+  }
+
+  loadMessages(baustellenId: number) {
+    const messagesUrl = `http://localhost:8080/beitrag`;
+    console.log('Loading messages from URL:', messagesUrl);
+    this.client.get<Beitrag[]>(messagesUrl)
+      .subscribe(data => {
+        const employeeObservables = data.filter(beitrag => beitrag.baustelleId === baustellenId)
+          .map(beitrag =>
+            this.loadEmployeeData(beitrag.personalnummer!).pipe(
+              map(employee => ({
+                text: beitrag.freitext || '',
+                timestamp: new Date(beitrag.zeitstempel || ''),
+                user: `${employee.vorname} ${employee.nachname}`,
+                images: [] // Assuming no images provided in `Beitrag`
+              }))
+            )
+          );
+
+        forkJoin(employeeObservables).subscribe(messages => {
+          this.messages = messages;
+        });
+      }, error => {
+        console.error('Fehler beim Laden der Nachrichten:', error);
+      });
+  }
+
   sendMessage() {
-    if (this.newMessage.trim()) {
-      const newMsg = {
-        text: this.newMessage,
-        timestamp: new Date(),
-        user: 'Aktueller Benutzer',
-        images: this.selectedFiles.map(file => URL.createObjectURL(file))
+    if (this.newMessage.trim() && this.projectIDUrl !== null) {
+      const newMsg: Beitrag = {
+        freitext: this.newMessage,
+        baustelleId: this.projectIDUrl,
+        personalnummer: 100, // Beispielbenutzer
+        zeitstempel: new Date().toISOString(),
       };
 
-      this.messages.push(newMsg);
-      this.newMessage = '';
-      this.selectedFiles = [];
-      this.fileInput.nativeElement.value = '';
+      // Nachricht an Backend senden
+      this.client.post<Beitrag>('http://localhost:8080/beitrag', newMsg)
+        .subscribe(
+          response => {
+            this.loadEmployeeData(response.personalnummer!).subscribe(employee => {
+              this.messages.push({
+                text: response.freitext || '',
+                timestamp: new Date(response.zeitstempel || ''),
+                user: `${employee.vorname} ${employee.nachname}`,
+                images: this.selectedFiles.map(file => URL.createObjectURL(file))
+              });
+            });
+            this.newMessage = '';
+            this.selectedFiles = [];
+            this.fileInput.nativeElement.value = '';
+          },
+          error => {
+            console.error('Fehler beim Senden der Nachricht:', error);
+          }
+        );
     }
   }
 

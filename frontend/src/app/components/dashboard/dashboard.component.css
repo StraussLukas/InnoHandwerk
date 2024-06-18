@@ -42,3 +42,11 @@ select option {
   cursor: pointer;
 }
 
+.admin-buttons {
+  position: absolute;
+  top: 180px;
+  right: 200px;
+  display: flex;
+  gap: 10px;
+}
+

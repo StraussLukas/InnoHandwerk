@@ -1,17 +1,24 @@
 <div class="project-info-tile">
   <div class="image-container">
-    <img [src]="project.image" alt="Projektbild" *ngIf="project.image">
+    <img [src]="project?.image" alt="Projektbild" *ngIf="project?.image">
   </div>
   <div class="info-container">
-    <h2>{{ project.title }}</h2>
+    <h2>{{ project?.titel }}</h2>
     <div class="details">
       <div>
-        <p><strong>Name:</strong> {{ project.name }}</p>
-        <p><strong>Adresse:</strong> {{ project.address }}</p>
-        <p><strong>Status:</strong> {{ project.status }}</p>
+        <p><strong>Name Bauherr:</strong> {{ project?.name_bauherr }}</p>
+        <p><strong>Adresse:</strong> {{ project?.adresse }}</p>
+        <p><strong>Status:</strong> {{ project?.status }}</p>
+      </div>
+      <div>
+        <p><strong>Telefon:</strong> {{ project?.telefon }}</p>
+        <p><strong>Email:</strong> {{ project?.email }}</p>
+        <p><strong>Arbeitsaufwand:</strong> {{ project?.arbeitsaufwand }}</p>
       </div>
     </div>
-    <div *ngIf="isDashboard"><button type="submit">Details</button></div>
+    <div *ngIf="isDashboard">
+      <button type="button" (click)="navigateToProjectDetail()">Details</button>
+    </div>
 
   </div>
 </div>
