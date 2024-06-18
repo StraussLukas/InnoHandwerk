@@ -39,6 +39,11 @@ public class AnhangController {
         return service.addAnhang(anhang);
     }
 
+    @PostMapping(value = "/anhang/{beitragId}")
+    public String addAnhangRefactored(@PathVariable Integer beitragId){
+        return service.addAnhangRefactored(beitragId);
+    }
+
     @PutMapping(value = "/anhang")
     public Integer updateAnhang(@RequestBody Anhang anhang){
         return service.updateAnhang(anhang);

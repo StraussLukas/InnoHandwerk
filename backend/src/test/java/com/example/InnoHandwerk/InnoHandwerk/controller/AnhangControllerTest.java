@@ -211,9 +211,28 @@ public class AnhangControllerTest {
 
     @Test
     @Order(10)
+    void addAnhangRefactored_whenExcuted_thenNumberOfEntitiesmustBe6() throws Exception{
+        this.mockMvc.perform(
+                        post("/anhang/" + "4")
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        MvcResult mvcResult = this.mockMvc.perform(
+                        get("/anhang/" + "6")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+
+    @Test
+    @Order(11)
     @Sql(statements = {
             "DELETE FROM anhang WHERE id = '-1'",
-            "DELETE FROM anhang WHERE id = '-2'"
+            "DELETE FROM anhang WHERE id = '-2'",
+            "DELETE FROM anhang WHERE id = '6'"
     })
     void getAllAnhaenge_checkNumberOfEntitiesAfterDeletingTestData_thenStatusOkAndSize5() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(

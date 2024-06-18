@@ -27,14 +27,14 @@ public class BaustellenbesetzungServiceTest {
 
     @BeforeAll
     void setUp() {
-        besetzung1.setPersonalnummer(1001);
-        besetzung1.setBaustellen_id(5);
+        besetzung1.setPersonalnummer(100);
+        besetzung1.setBaustellen_id(3);
         besetzung1.setDatum(20230530.0);
         besetzung1.setUhrzeit_von(Time.valueOf("08:00:00"));
         besetzung1.setUhrzeit_bis(Time.valueOf("16:00:00"));
 
-        besetzung2.setPersonalnummer(1002);
-        besetzung2.setBaustellen_id(6);
+        besetzung2.setPersonalnummer(200);
+        besetzung2.setBaustellen_id(4);
         besetzung2.setDatum(20230530.0);
         besetzung2.setUhrzeit_von(Time.valueOf("09:00:00"));
         besetzung2.setUhrzeit_bis(Time.valueOf("17:00:00"));
@@ -61,8 +61,8 @@ public class BaustellenbesetzungServiceTest {
         var actualId1 = service.addBaustellenBesetzung(besetzung1);
         var actualId2 = service.addBaustellenBesetzung(besetzung2);
         // assert
-        assertEquals("1001", actualId1);
-        assertEquals("1002", actualId2);
+        assertEquals("100", actualId1);
+        assertEquals("200", actualId2);
     }
 
     @Order(3)
@@ -81,7 +81,7 @@ public class BaustellenbesetzungServiceTest {
         Optional<Baustellenbesetzung> actualEntity = service.getBaustellenBesetzungById(5);
         // assert
         assertThat(actualEntity).isPresent();
-        assertEquals(5, actualEntity.get().getBaustellen_id());
+        assertEquals(3, actualEntity.get().getBaustellen_id());
     }
 
     @Order(5)
@@ -95,14 +95,14 @@ public class BaustellenbesetzungServiceTest {
     @Test
     void updateBaustellenBesetzung_whenValidModel_thenReturnEntityId() {
         // arrange
-        besetzung1.setBaustellen_id(7);
+        besetzung1.setBaustellen_id(1);
         // actual
         var actualId = service.updateBaustellenBesetzung(besetzung1);
         var actualEntity = service.getBaustellenBesetzungById(5).orElse(null);
         // assert
         assertEquals(5, actualId);
         assertThat(actualEntity).isNotNull();
-        assertEquals(7, actualEntity.getBaustellen_id());
+        assertEquals(1, actualEntity.getBaustellen_id());
     }
 
     @Order(7)

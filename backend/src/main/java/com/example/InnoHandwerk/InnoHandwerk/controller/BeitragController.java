@@ -24,14 +24,14 @@ public class BeitragController {
                 ()-> new ResponseStatusException( HttpStatus.NOT_FOUND, "entity not found"));
     }
 
-    @GetMapping(value = "/beitrag")
-    public List<Beitrag> getAllBeitrag(){
-        return service.getAllBeitrag();
+    @GetMapping(value = "/beitraege")
+    public List<Beitrag> getAllBeitraege(){
+        return service.getAllBeitraege();
     }
 
-    @GetMapping(value = "/beitragByBaustelle/{baustellenId}")
-    public List<Beitrag> getBeitragByBaustellenId(@PathVariable Integer baustellenId){
-        return service.getAllBeitragByBaustellenId(baustellenId);
+    @GetMapping(value = "/beitraegeByBaustelle/{baustellenId}")
+    public List<Beitrag> getBeitraegeByBaustellenId(@PathVariable Integer baustellenId){
+        return service.getAllBeitraegeByBaustellenId(baustellenId);
     }
 
     @PostMapping(value = "/beitrag")

@@ -42,21 +42,21 @@ public class BaustellenbesetzungControllerTest {
 
     @BeforeAll
     void setUp() {
-        validBaustellenbesetzung1.setPersonalnummer(1001);
-        validBaustellenbesetzung1.setBaustellen_id(5);
+        validBaustellenbesetzung1.setPersonalnummer(100);
+        validBaustellenbesetzung1.setBaustellen_id(3);
         validBaustellenbesetzung1.setDatum(20230530.0);
         validBaustellenbesetzung1.setUhrzeit_von(Time.valueOf("08:00:00"));
         validBaustellenbesetzung1.setUhrzeit_bis(Time.valueOf("17:00:00"));
 
-        validBaustellenbesetzung2.setPersonalnummer(1002);
-        validBaustellenbesetzung2.setBaustellen_id(6);
+        validBaustellenbesetzung2.setPersonalnummer(200);
+        validBaustellenbesetzung2.setBaustellen_id(4);
         validBaustellenbesetzung2.setDatum(20230530.0);
         validBaustellenbesetzung2.setUhrzeit_von(Time.valueOf("09:00:00"));
         validBaustellenbesetzung2.setUhrzeit_bis(Time.valueOf("18:00:00"));
 
         updatedBaustellenbesetzung2.setId(6);
-        updatedBaustellenbesetzung2.setPersonalnummer(1002);
-        updatedBaustellenbesetzung2.setBaustellen_id(7);
+        updatedBaustellenbesetzung2.setPersonalnummer(200);
+        updatedBaustellenbesetzung2.setBaustellen_id(1);
         updatedBaustellenbesetzung2.setDatum(20230530.0);
         updatedBaustellenbesetzung2.setUhrzeit_von(Time.valueOf("10:00:00"));
         updatedBaustellenbesetzung2.setUhrzeit_bis(Time.valueOf("19:00:00"));
@@ -122,8 +122,8 @@ public class BaustellenbesetzungControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.personalnummer").value(1001))
-                .andExpect(jsonPath("$.baustellen_id").value(5))
+                .andExpect(jsonPath("$.personalnummer").value(100))
+                .andExpect(jsonPath("$.baustellen_id").value(3))
                 .andExpect(jsonPath("$.datum").value(20230530.0))
                 .andExpect(jsonPath("$.uhrzeit_von").value("08:00:00"))
                 .andExpect(jsonPath("$.uhrzeit_bis").value("17:00:00"));
@@ -156,8 +156,8 @@ public class BaustellenbesetzungControllerTest {
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.personalnummer").value(1002))
-                .andExpect(jsonPath("$.baustellen_id").value(7))
+                .andExpect(jsonPath("$.personalnummer").value(200))
+                .andExpect(jsonPath("$.baustellen_id").value(1))
                 .andExpect(jsonPath("$.datum").value(20230530.0))
                 .andExpect(jsonPath("$.uhrzeit_von").value("10:00:00"))
                 .andExpect(jsonPath("$.uhrzeit_bis").value("19:00:00"));
