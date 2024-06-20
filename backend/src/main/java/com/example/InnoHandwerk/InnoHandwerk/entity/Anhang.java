@@ -14,16 +14,16 @@ import org.hibernate.annotations.GenericGenerator;
 public class Anhang {
 
     @Id
-    /*@GeneratedValue(generator = "beitrags-generator")
+    @GeneratedValue(generator = "anhangs-generator")
     @GenericGenerator(
-            name = "beitrags-generator",
+            name = "anhangs-generator",
             strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
             parameters = {
-                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "beitrags_id_seq"),
+                    @org.hibernate.annotations.Parameter(name = "sequence_name", value = "anhangs_id_seq"),
                     @org.hibernate.annotations.Parameter(name = "initial_value", value = "7"),
                     @org.hibernate.annotations.Parameter(name = "increment_size", value = "1")
             }
-    )*/
+    )
     private Integer id;
     private String datei;
     @Column(name = "beitrag_id")

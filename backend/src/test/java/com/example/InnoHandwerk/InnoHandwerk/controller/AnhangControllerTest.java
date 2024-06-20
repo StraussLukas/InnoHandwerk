@@ -50,15 +50,13 @@ public class AnhangControllerTest {
 
     @BeforeAll
     void setUp() {
-        anhang1.setId(-1);
         anhang1.setDatei("path1");
         anhang1.setBeitragId(4);
 
-        anhang2.setId(-2);
         anhang2.setDatei("path2");
         anhang2.setBeitragId(5);
 
-        anhangUpdated.setId(-2);
+        anhangUpdated.setId(7);
         anhangUpdated.setDatei("path1");
         anhangUpdated.setBeitragId(5);
     }
@@ -150,12 +148,12 @@ public class AnhangControllerTest {
                 .andExpect(status().isOk());
 
         this.mockMvc.perform(
-                        get("/anhang/" + "-2")
+                        get("/anhang/" + "7")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(-2))
+                .andExpect(jsonPath("$.id").value(7))
                 .andExpect(jsonPath("$.datei").value("path1"))
                 .andExpect(jsonPath("$.beitragId").value(5));
     }
@@ -179,14 +177,14 @@ public class AnhangControllerTest {
     @Order(8)
     void deleteAnhangById_checkIfEntityNoMoreExists_thenStatusOk() throws Exception {
         this.mockMvc.perform(
-                        delete("/anhang/" + "-1")
+                        delete("/anhang/" + "6")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         MvcResult mvcResult = this.mockMvc.perform(
-                        get("/anhang/" + "-1")
+                        get("/anhang/" + "6")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andReturn();
@@ -203,7 +201,7 @@ public class AnhangControllerTest {
                 .andExpect(status().isOk());
 
         MvcResult mvcResult = this.mockMvc.perform(
-                        get("/anhang/" + "-2")
+                        get("/anhang/" + "7")
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andReturn();
@@ -212,8 +210,9 @@ public class AnhangControllerTest {
     @Test
     @Order(10)
     @Sql(statements = {
-            "DELETE FROM anhang WHERE id = '-1'",
-            "DELETE FROM anhang WHERE id = '-2'"
+            "DELETE FROM anhang WHERE id = '6'",
+            "DELETE FROM anhang WHERE id = '7'",
+            "ALTER SEQUENCE anhangs_id_seq RESTART"
     })
     void getAllAnhaenge_checkNumberOfEntitiesAfterDeletingTestData_thenStatusOkAndSize5() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(

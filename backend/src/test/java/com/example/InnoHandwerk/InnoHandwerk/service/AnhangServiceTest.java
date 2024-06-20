@@ -27,11 +27,9 @@ public class AnhangServiceTest {
 
     @BeforeAll
     void setUp() {
-        anhang1.setId(-1);
         anhang1.setDatei("path1");
         anhang1.setBeitragId(5);
 
-        anhang2.setId(-2);
         anhang2.setDatei("path2");
         anhang2.setBeitragId(4);
     }
@@ -59,8 +57,8 @@ public class AnhangServiceTest {
         var actualId1 = anhangService.addAnhang(anhang1);
         var actualId2 = anhangService.addAnhang(anhang2);
         //assert
-        assertThat(actualId1).isEqualTo(-1);
-        assertThat(actualId2).isEqualTo(-2);
+        assertThat(actualId1).isEqualTo(6);
+        assertThat(actualId2).isEqualTo(7);
     }
 
     @Order(3)
@@ -78,7 +76,7 @@ public class AnhangServiceTest {
     @Test
     void getAnhangById_whenEntityExists_thenReturnEntity() {
         //actual
-        var actualEntity = anhangService.getAnhangById(-1);
+        var actualEntity = anhangService.getAnhangById(6);
         //assert
         assertThat(actualEntity).isPresent();
         assertEquals(5, actualEntity.get().getBeitragId());
@@ -96,14 +94,14 @@ public class AnhangServiceTest {
     void updateAnhang_whenValidModel_thenReturnEntityId() {
         //arrange
         var updatedAnhang = new Anhang();
-        updatedAnhang.setId(-1);
+        updatedAnhang.setId(6);
         updatedAnhang.setDatei("path1");
         updatedAnhang.setBeitragId(4);
         //actual
         var actualId = anhangService.updateAnhang(updatedAnhang);
         var actualEntity = anhangService.getAnhangById(actualId);
         //assert
-        assertThat(actualId).isEqualTo(-1);
+        assertThat(actualId).isEqualTo(6);
         assertThat(actualEntity).isPresent();
         assertThat(actualEntity.get().getBeitragId()).isEqualTo(4);
     }
@@ -131,10 +129,10 @@ public class AnhangServiceTest {
     @Test
     void deleteAnhangById_whenExcuted_thenCertainAnhangNull() {
         // act
-        anhangService.deleteAnhangById(-1);
-        anhangService.deleteAnhangById(-2);
+        anhangService.deleteAnhangById(6);
+        anhangService.deleteAnhangById(7);
         // assert
-        assertThat(anhangService.getAnhangById(-1)).isNotPresent();
+        assertThat(anhangService.getAnhangById(6)).isNotPresent();
     }
 
     @Order(10)
@@ -153,8 +151,9 @@ public class AnhangServiceTest {
     @Order(11)
     @Test
     @Sql(statements = {
-            "DELETE FROM anhang WHERE id = '-1'",
-            "DELETE FROM anhang WHERE id = '-2'"
+            "DELETE FROM anhang WHERE id = '6'",
+            "DELETE FROM anhang WHERE id = '7'",
+            "ALTER SEQUENCE anhangs_id_seq RESTART"
     })
     void getAllAnhaenge_checkNumberOfEntitiesAfterDeletingTestData_must5() {
         //arrange

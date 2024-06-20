@@ -49,19 +49,19 @@ public class BeitragControllerTest {
 
     @BeforeAll
     void setUp() {
-        beitrag1.setId(-1);
+
         beitrag1.setFreitext("text1");
         beitrag1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
         beitrag1.setBaustelleId(-10);
         beitrag1.setPersonalnummer(10);
 
-        beitrag2.setId(-2);
+
         beitrag2.setFreitext("text2");
         beitrag2.setZeitstempel(Timestamp.valueOf("2024-07-14 14:30:00"));
         beitrag2.setBaustelleId(-20);
         beitrag2.setPersonalnummer(-10);
 
-        beitragupdated.setId(-2);
+        beitragupdated.setId(7);
         beitragupdated.setFreitext("text2");
         beitragupdated.setZeitstempel(Timestamp.valueOf("2024-07-14 14:30:00"));
         beitragupdated.setBaustelleId(-30);
@@ -157,12 +157,12 @@ public class BeitragControllerTest {
                 .andExpect(status().isOk());
 
         this.mockMvc.perform(
-                        get("/beitrag/" + "-2")
+                        get("/beitrag/" + "7")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(-2))
+                .andExpect(jsonPath("$.id").value(7))
                 .andExpect(jsonPath("$.freitext").value("text2"))
                 // .andExpect(jsonPath("$.zeitstempel").value(Timestamp.valueOf("2024-07-14 14:30:00")))
                 .andExpect(jsonPath("$.baustelleId").value(-30));
@@ -187,7 +187,7 @@ public class BeitragControllerTest {
     @Order(8)
     void deleteBeitragById_checkIfEntityNoMoreExists_thenStatusOk() throws Exception {
         this.mockMvc.perform(
-                        delete("/beitrag/" + "-1")
+                        delete("/beitrag/" + "6")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -201,7 +201,7 @@ public class BeitragControllerTest {
                 .andExpect(status().isOk());*/
 
         MvcResult mvcResult = this.mockMvc.perform(
-                        get("/beitrag/" + "-1")
+                        get("/beitrag/" + "6")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andReturn();
@@ -218,7 +218,7 @@ public class BeitragControllerTest {
                 .andExpect(status().isOk());
 
         MvcResult mvcResult = this.mockMvc.perform(
-                        get("/anhang/" + "-2")
+                        get("/anhang/" + "7")
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andReturn();
@@ -227,8 +227,9 @@ public class BeitragControllerTest {
     @Test
     @Order(10)
     @Sql(statements = {
-            "DELETE FROM beitrag WHERE id = '-1'",
-            "DELETE FROM beitrag WHERE id = '-2'"
+            "DELETE FROM beitrag WHERE id = '6'",
+            "DELETE FROM beitrag WHERE id = '7'",
+            "ALTER SEQUENCE beitrags_id_seq RESTART"
     })
     void getAllBeitraege_checkNumberOfEntitiesAfterDeletingTestData_thenStatusOkAndSize5() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(
