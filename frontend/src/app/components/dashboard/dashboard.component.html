@@ -7,8 +7,11 @@
   </select>
 
   <label for="filterValue" *ngIf="filterType">Wert:</label>
-  <select id="filterValue" [(ngModel)]="filterValue" *ngIf="filterType">
-    <option *ngFor="let value of (filterType === 'employee' ? employeeNames : statuses)" [value]="value">{{ value }}</option>
+  <select id="filterValue" [(ngModel)]="filterValue" *ngIf="filterType === 'status'">
+    <option *ngFor="let value of statuses" [value]="value">{{ value }}</option>
+  </select>
+  <select [(ngModel)]="filterValue" *ngIf="filterType === 'employee'">
+    <option *ngFor="let employee of employees" [ngValue]="employee">{{employee.vorname}} {{employee.nachname}}</option>
   </select>
 
   <button (click)="applyFilter()">Filter anwenden</button>

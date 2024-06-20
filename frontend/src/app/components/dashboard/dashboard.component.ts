@@ -6,7 +6,8 @@ import {HttpClient} from "@angular/common/http";
 import {ActivatedRoute } from "@angular/router";
 import {Employee} from "../../model/employee";
 import {ConstructionSite} from "../../model/constructionSite";
-import {ConstructionSiteService} from "../../services/construction-site.service";
+import {ConstructionSiteService} from "../../services/construction/construction-site.service";
+import {EmployeeService} from "../../services/employee/employee.service";
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -31,12 +32,19 @@ export class DashboardComponent implements OnInit{
     { value: 'status', label: 'Status' }
   ];
 
-  employeeNames = ['Tobias Keller', 'Florian Wagner', 'Sebastian Meier', 'Daniel Fischer', 'Andreas Schulze', 'Katrin Hoffmann', 'Laura Becker', 'Julia Neumann', 'Lena Schneider', 'Martina Krüger', 'Thomas Müller', 'Sarah Braun', 'Michael König', 'Anja Richter', 'Lukas Bauer', 'Christina Wolf', 'Patrick Schäfer', 'Sandra Hartmann', 'Kevin Lehmann', 'Claudia Weber']
-  statuses = ['In Planung', 'Fertiggestellt', 'Abgeschlossen'];
+  employees: Employee[] = [];
+  statuses = ['Erstellt', 'In Arbeit', 'Abgeschlossen'];
   personalnummerUrl!: number | null;
   mitarbeiterDaten: Employee = {};
 
-  constructor(private client: HttpClient, private route: ActivatedRoute, private constructionSiteService: ConstructionSiteService) {}
+  isApplyFilter: boolean = false;
+
+  constructor(
+    private client: HttpClient,
+    private route: ActivatedRoute,
+    private constructionSiteService: ConstructionSiteService,
+    private employeeService: EmployeeService
+  ) {}
 
   ngOnInit() {
     const parameterFromUrl = this.route.snapshot.paramMap.get('personalnummer');
@@ -53,11 +61,12 @@ export class DashboardComponent implements OnInit{
       }, error => {
         console.error('Fehler beim Laden der Mitarbeiterdaten:', error);
       });
-
+    this.loadEmployeeData();
     this.loadProjects();
   }
 
   loadProjects() {
+    this.projects = [];
     this.constructionSiteService.getAllConstructionSites().subscribe(
       (data: ConstructionSite[]) => {
         this.projects = data;
@@ -68,12 +77,56 @@ export class DashboardComponent implements OnInit{
     );
   }
 
+  loadEmployeeData() {
+    this.employeeService.getAllEmployees().subscribe(
+      (data: Employee[]) => {
+        // Wir speichern die empfangenen Employee-Objekte in das Array employees.
+        this.employees = data;
+      },
+      error => {
+        console.error('Fehler beim Laden der Mitarbeiterdaten:', error);
+      }
+    );
+  }
+
   onFilterTypeChange() {
     this.filterValue = '';
   }
 
   applyFilter() {
-    //Call ans Backend
+    this.projects = [];
+
+    if (this.filterType === 'employee' && this.filterValue) {
+      const selectedEmployee: Employee = this.filterValue as Employee;
+
+      if (selectedEmployee.personalnummer !== undefined && selectedEmployee.personalnummer !== null) {
+        this.constructionSiteService.getConstructionSitesByPersonalnummer(selectedEmployee.personalnummer.toString())
+          .subscribe(
+            (data: ConstructionSite[]) => {
+              this.projects = data;
+            },
+            error => {
+              console.error('Fehler beim Filtern der Projekte:', error);
+            }
+          );
+      } else {
+        console.error('Die Personalnummer des ausgewählten Mitarbeiters ist nicht definiert.');
+      }
+
+    } else if (this.filterType === 'status' && this.filterValue) {
+      this.constructionSiteService.getConstructionSitesByStatus(this.filterValue)
+        .subscribe(
+          (data: ConstructionSite[]) => {
+            this.projects = data;
+          },
+          error => {
+            console.error('Fehler beim Filtern der Projekte:', error);
+          }
+        );
+    } else {
+      this.loadProjects();
+    }
   }
+
 
 }

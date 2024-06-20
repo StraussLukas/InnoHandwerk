@@ -1,6 +1,11 @@
 <div class="project-info-tile">
   <div class="image-container">
-    <img [src]="project?.image" alt="Projektbild" *ngIf="project?.image">
+    <ng-container *ngIf="project?.image; else defaultImage">
+      <img [src]="project?.image" alt="Projektbild">
+    </ng-container>
+    <ng-template #defaultImage>
+      <img src="assets/default-project-image.jpg" alt="Standardbild" style="opacity: 0.2;">
+    </ng-template>
   </div>
   <div class="info-container">
     <h2>{{ project?.titel }}</h2>
