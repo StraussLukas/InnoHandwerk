@@ -32,6 +32,7 @@ export class ProjectDetailComponent implements OnInit {
   selectedFiles: File[] = [];
   projectIDUrl?: number | null;
   personalnummerUrl!: number | null;
+  mitarbeiterDaten: Employee = {};
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
@@ -53,6 +54,21 @@ export class ProjectDetailComponent implements OnInit {
           this.project = data;
         }, error => {
           console.error('Fehler beim Laden der Baustelle:', error);
+        });
+
+      const parameterFromUrl = this.route.snapshot.paramMap.get('personalnummer');
+      if (parameterFromUrl !== null && !isNaN(+parameterFromUrl)) {
+        this.personalnummerUrl = +parameterFromUrl;
+      } else {
+        this.personalnummerUrl = null;
+      }
+      this.client.get<Employee>(`http://localhost:8080/mitarbeiter/${this.personalnummerUrl}`)
+        .subscribe(data => {
+          this.mitarbeiterDaten.vorname = data.vorname;
+          this.mitarbeiterDaten.nachname = data.nachname;
+          this.mitarbeiterDaten.admin = data.admin;
+        }, error => {
+          console.error('Fehler beim Laden der Mitarbeiterdaten:', error);
         });
 
       this.loadMessages(this.projectIDUrl);
@@ -98,7 +114,7 @@ export class ProjectDetailComponent implements OnInit {
       const newMsg: Beitrag = {
         freitext: this.newMessage,
         baustelleId: this.projectIDUrl,
-        personalnummer: 100, // Beispielbenutzer
+        personalnummer: this.mitarbeiterDaten.personalnummer, // Beispielbenutzer
         zeitstempel: new Date().toISOString(),
       };
 

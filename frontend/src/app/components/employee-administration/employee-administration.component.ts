@@ -22,11 +22,11 @@ export class EmployeeAdministrationComponent implements OnInit {
 
   constructor(private fb: FormBuilder, private http: HttpClient) {
     this.employeeForm = this.fb.group({
+      personalnummer: ['', Validators.required],
       vorname: ['', Validators.required],
       nachname: ['', Validators.required],
       email: ['', Validators.required],
-      personalnummer: ['', Validators.required],
-      isAdmin: [false] // New checkbox field for admin
+      admin: [false]
     });
   }
 
@@ -135,6 +135,7 @@ export class EmployeeAdministrationComponent implements OnInit {
   sendEmployeeToBackend(employee: Partial<Employee>) {
     const employeeApiUrl = 'http://localhost:8080/mitarbeiter';
     const { image, ...employeeData } = employee;
+    console.log(employeeData);
 
     this.http.post(employeeApiUrl, employeeData).subscribe(
       (response: any) => {
