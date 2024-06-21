@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import java.awt.image.BufferStrategy;
 import java.sql.Time;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -101,11 +102,10 @@ public class BaustellenbesetzungRepositoryTest {
     }
 
     @Test
-    void update_getAllByPersonalnummer_thenReturnList(){
-        List<Baustellenbesetzung> baustellenbesetzungen = repository.getDistinctByPersonalnummer(1001);
-        assertThat(baustellenbesetzungen).hasSize(2);
-        assertThat(baustellenbesetzungen.get(0).getId()).isEqualTo(5);
-        assertThat(baustellenbesetzungen.get(1).getId()).isEqualTo(7);
+    void getAllByPersonalnummer_thenReturnList(){
+        List<Baustellenbesetzung> baustellenbesetzung = repository.findByBaustellenId(1);
+        assertThat(baustellenbesetzung.get(0).getPersonalnummer()).isEqualTo(1001);
+        assertThat(baustellenbesetzung.get(0).getDatum()).isEqualTo(20230530.0);
 
     }
 

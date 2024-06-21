@@ -26,11 +26,9 @@ public class BaustellenBesetzungController {
         return service.getAllBaustellenBesetzung();
     }
 
-    @GetMapping(value = "/baustellenBesetzung/{id}")
-    public Baustellenbesetzung getBaustellenBesetzungById(@PathVariable Integer id){
-        return service.getBaustellenBesetzungById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "entity not found")
-        );
+    @GetMapping(value = "/baustellenBesetzung/{baustellenId}")
+    public List<Baustellenbesetzung> getBaustellenBesetzungByBaustellenId(@PathVariable Integer baustellenId){
+        return service.getBaustellenBesetzungByBaustellenId(baustellenId);
     }
 
     @PutMapping(value = "/baustellenBesetzung")

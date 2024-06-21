@@ -8,6 +8,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.sql.Time;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -90,17 +91,17 @@ public class BaustellenbesetzungServiceTest {
     @Test
     void getBaustellenBesetzungByPersonalnummer_whenEntityExists_thenReturnEntity() {
         // actual
-        Optional<Baustellenbesetzung> actualEntity = service.getBaustellenBesetzungById(5);
+        List<Baustellenbesetzung> actualEntity = service.getBaustellenBesetzungByBaustellenId(6);
         // assert
-        assertThat(actualEntity).isPresent();
-        assertEquals(5, actualEntity.get().getBaustellenId());
+        assertThat(actualEntity).isNotEmpty();
+        assertEquals(1002, actualEntity.get(0).getPersonalnummer());
     }
 
     @Order(5)
     @Test
     void getBaustellenBesetzungByPersonalnummer_whenEntityNotExists_thenReturnThrowException() {
         // assert
-        assertThat(service.getBaustellenBesetzungById(9999)).isNotPresent();
+        assertThat(service.getBaustellenBesetzungByBaustellenId(-9999)).isEmpty();
     }
 
     @Order(6)
@@ -119,11 +120,11 @@ public class BaustellenbesetzungServiceTest {
         besetzung1.setBaustellenId(7);
         // actual
         var actualId = service.updateBaustellenBesetzung(besetzung1);
-        var actualEntity = service.getBaustellenBesetzungById(5).orElse(null);
+        var actualEntities = service.getBaustellenBesetzungByBaustellenId(7);
         // assert
         assertEquals(5, actualId);
-        assertThat(actualEntity).isNotNull();
-        assertEquals(7, actualEntity.getBaustellenId());
+        assertThat(actualEntities).isNotNull();
+        assertEquals(7, actualEntities.get(0).getBaustellenId());
     }
 
     @Order(8)

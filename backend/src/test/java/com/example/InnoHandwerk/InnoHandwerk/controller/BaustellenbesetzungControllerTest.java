@@ -132,14 +132,35 @@ public class BaustellenbesetzungControllerTest {
     @Test
     @Order(5)
     void getBaustellenBesetzungByPersonalnummer_entityWithIdNotFound_thenNotFound() throws Exception {
-        this.mockMvc.perform(get("/baustellenBesetzung/" + 999)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+        MvcResult mvcResult = this.mockMvc.perform(
+                        get("/baustellenBesetzung/999")
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Baustelle> result = objectMapper.readValue(contentAsString, new TypeReference<>() {});
+        assertThat(result).isEmpty();
     }
 
     @Test
     @Order(6)
+    void getBaustellenBesetzungByBaustellenId_whenEntityWithIdFound_ThenOkAndReturnEntity() throws Exception {
+           this.mockMvc.perform(
+                        get("/baustellenBesetzung/" + 6)
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.personalnummer").value(1002))
+                .andExpect(jsonPath("$.datum").value(20230530.0))
+                .andExpect(jsonPath("$.uhrzeitVon").value("09:00:00"))
+                .andExpect(jsonPath("$.uhrzeitBis").value("18:00:00"));
+    }
+
+
+    @Test
+    @Order(7)
     void putBaustellenBesetzung_whenModelIsValid_thenStatusOk() throws Exception {
         ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
         String body = objectWriter.writeValueAsString(updatedBaustellenbesetzung2);
@@ -151,7 +172,7 @@ public class BaustellenbesetzungControllerTest {
                 .andExpect(status().isOk());
 
         this.mockMvc.perform(
-                        get("/baustellenBesetzung/" + 6)
+                        get("/baustellenBesetzung/" + 7)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -164,7 +185,7 @@ public class BaustellenbesetzungControllerTest {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void deleteBaustellenBesetzungByPersonalnummer_thenStatusOk() throws Exception {
         this.mockMvc.perform(
                         delete("/baustellenBesetzung/" + 1001)
@@ -175,14 +196,14 @@ public class BaustellenbesetzungControllerTest {
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     @Sql(statements = {
             "DELETE FROM baustellenbesetzung WHERE id = 5",
             "DELETE FROM baustellenbesetzung WHERE id = 6",
             "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
 
     })
-    void getAllBaustelle_checkNumberOfEntitiesAfterDeletingTestData_mustBe4() throws Exception {
+    void getAllBaustellenbestzungen_checkNumberOfEntitiesAfterDeletingTestData_mustBe4() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(
                         get("/baustellenBesetzung")
                                 .accept(MediaType.APPLICATION_JSON))

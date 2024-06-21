@@ -22,8 +22,8 @@ public class BaustellenBesetzungService {
         return repository.findAll();
     }
 
-    public Optional<Baustellenbesetzung> getBaustellenBesetzungById(Integer id) {
-        return repository.findById(id);
+    public List<Baustellenbesetzung> getBaustellenBesetzungByBaustellenId(Integer baustellenId) {
+        return repository.findByBaustellenId(baustellenId);
     }
 
     public Integer updateBaustellenBesetzung(Baustellenbesetzung baustellenBesetzung) {
