@@ -56,7 +56,6 @@ public class BeitragControllerTest {
     @BeforeAll
     void setUp() {
 
-        baustelle.setId(-1);
         baustelle.setTitel("Baustelle 1");
         baustelle.setName_bauherr("Bauherr1");
         baustelle.setAdresse("Adresse1");
@@ -64,7 +63,6 @@ public class BeitragControllerTest {
         baustelle.setTelefon("123456789");
         baustelle.setEmail("bauherr1@example.com");
         baustelle.setArbeitsaufwand(10);
-        baustelle.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
 
 
         baustelleService.addBaustelle(baustelle);
@@ -72,18 +70,18 @@ public class BeitragControllerTest {
 
         beitrag1.setFreitext("Dichtungen des Hauswasserwerks überprüfen");
         beitrag1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
-        beitrag1.setBaustelleId(-1);
+        beitrag1.setBaustelleId(5);
         beitrag1.setPersonalnummer(100);
 
         beitrag2.setFreitext("text2");
         beitrag2.setZeitstempel(Timestamp.valueOf("2024-07-14 14:30:00"));
-        beitrag2.setBaustelleId(-1);
+        beitrag2.setBaustelleId(5);
         beitrag2.setPersonalnummer(100);
 
         beitragupdated.setId(7);
         beitragupdated.setFreitext("text3");
         beitragupdated.setZeitstempel(Timestamp.valueOf("2024-07-14 14:30:00"));
-        beitragupdated.setBaustelleId(-1);
+        beitragupdated.setBaustelleId(5);
         beitragupdated.setPersonalnummer(100);
     }
 
@@ -150,7 +148,7 @@ public class BeitragControllerTest {
                 .andExpect(jsonPath("$.id").value(6))
                 .andExpect(jsonPath("$.freitext").value("Dichtungen des Hauswasserwerks überprüfen"))
                // .andExpect(jsonPath("$.zeitstempel").value(Timestamp.valueOf("2024-01-01 12:00:00")))
-                .andExpect(jsonPath("$.baustelleId").value(-1));
+                .andExpect(jsonPath("$.baustelleId").value(5));
     }
 
     @Test
@@ -184,7 +182,7 @@ public class BeitragControllerTest {
                 .andExpect(jsonPath("$.id").value(7))
                 .andExpect(jsonPath("$.freitext").value("text3"))
                 // .andExpect(jsonPath("$.zeitstempel").value(Timestamp.valueOf("2024-07-14 14:30:00")))
-                .andExpect(jsonPath("$.baustelleId").value(-1));
+                .andExpect(jsonPath("$.baustelleId").value(5));
     }
 
     @Test
@@ -224,7 +222,7 @@ public class BeitragControllerTest {
     @Order(9)
     void deleteBeitraegeByBaustelllenId_checkIfEntitysNoMoreExists_thenStatusOk() throws Exception {
         this.mockMvc.perform(
-                        delete("/beitraegeByBaustelle/" + "-1")
+                        delete("/beitraegeByBaustelle/" + "5")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -242,8 +240,10 @@ public class BeitragControllerTest {
     @Sql(statements = {
             "DELETE FROM beitrag WHERE id = '6'",
             "DELETE FROM beitrag WHERE id = '7'",
-            "DELETE FROM baustelle WHERE id = '-1'",
-            "ALTER SEQUENCE beitrags_id_seq RESTART"
+            "DELETE FROM baustelle WHERE id = '5'",
+            "ALTER SEQUENCE beitrags_id_seq RESTART",
+            "ALTER SEQUENCE baustelle_id_seq RESTART"
+
     })
     void getAllBeitraege_checkNumberOfEntitiesAfterDeletingTestData_thenStatusOkAndSize5() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(

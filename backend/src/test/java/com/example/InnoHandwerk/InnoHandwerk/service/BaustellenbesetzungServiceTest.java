@@ -59,7 +59,6 @@ public class BaustellenbesetzungServiceTest {
         mitarbeiterService.addMitarbeiter(mitarbeiter1001);
         mitarbeiterService.addMitarbeiter(mitarbeiter1002);
 
-        baustelle.setId(-1);
         baustelle.setTitel("Baustelle 1");
         baustelle.setName_bauherr("Bauherr1");
         baustelle.setAdresse("Adresse1");
@@ -67,12 +66,10 @@ public class BaustellenbesetzungServiceTest {
         baustelle.setTelefon("123456789");
         baustelle.setEmail("bauherr1@example.com");
         baustelle.setArbeitsaufwand(10);
-        baustelle.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
 
 
         baustelleService.addBaustelle(baustelle);
 
-        baustelle2.setId(-2);
         baustelle2.setTitel("Baustelle 1");
         baustelle2.setName_bauherr("Bauherr1");
         baustelle2.setAdresse("Adresse1");
@@ -80,26 +77,25 @@ public class BaustellenbesetzungServiceTest {
         baustelle2.setTelefon("123456789");
         baustelle2.setEmail("bauherr1@example.com");
         baustelle2.setArbeitsaufwand(10);
-        baustelle2.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
 
 
         baustelleService.addBaustelle(baustelle2);
 
 
         besetzung1.setPersonalnummer(1001);
-        besetzung1.setBaustellenId(-1);
+        besetzung1.setBaustellenId(5);
         besetzung1.setDatum(20230530.0);
         besetzung1.setUhrzeitVon(Time.valueOf("08:00:00"));
         besetzung1.setUhrzeitBis(Time.valueOf("16:00:00"));
 
         besetzung2.setPersonalnummer(1002);
-        besetzung2.setBaustellenId(-2);
+        besetzung2.setBaustellenId(6);
         besetzung2.setDatum(20230530.0);
         besetzung2.setUhrzeitVon(Time.valueOf("09:00:00"));
         besetzung2.setUhrzeitBis(Time.valueOf("17:00:00"));
 
         besetzung3.setPersonalnummer(1001);
-        besetzung3.setBaustellenId(-2);
+        besetzung3.setBaustellenId(6);
         besetzung3.setDatum(20230530.0);
         besetzung3.setUhrzeitVon(Time.valueOf("08:00:00"));
         besetzung3.setUhrzeitBis(Time.valueOf("16:00:00"));
@@ -150,7 +146,7 @@ public class BaustellenbesetzungServiceTest {
         Optional<Baustellenbesetzung> actualEntity = service.getBaustellenBesetzungById(5);
         // assert
         assertThat(actualEntity).isPresent();
-        assertEquals(-1, actualEntity.get().getBaustellenId());
+        assertEquals(5, actualEntity.get().getBaustellenId());
     }
 
     @Order(5)
@@ -173,14 +169,14 @@ public class BaustellenbesetzungServiceTest {
     @Test
     void updateBaustellenBesetzung_whenValidModel_thenReturnEntityId() {
         // arrange
-        besetzung1.setBaustellenId(-2);
+        besetzung1.setBaustellenId(6);
         // actual
         var actualId = service.updateBaustellenBesetzung(besetzung1);
         var actualEntity = service.getBaustellenBesetzungById(5).orElse(null);
         // assert
         assertEquals(5, actualId);
         assertThat(actualEntity).isNotNull();
-        assertEquals(-2, actualEntity.getBaustellenId());
+        assertEquals(6, actualEntity.getBaustellenId());
     }
 
     @Order(8)
@@ -199,11 +195,13 @@ public class BaustellenbesetzungServiceTest {
             "DELETE FROM baustellenbesetzung WHERE id = '5'",
             "DELETE FROM baustellenbesetzung WHERE id = '6'",
             "DELETE FROM baustellenbesetzung WHERE id = '7'",
-            "DELETE FROM baustelle WHERE id = '-1'",
-            "DELETE FROM baustelle WHERE id = '-2'",
+            "DELETE FROM baustelle WHERE id = '5'",
+            "DELETE FROM baustelle WHERE id = '6'",
             "DELETE FROM mitarbeiter WHERE personalnummer = '1001'",
             "DELETE FROM mitarbeiter WHERE personalnummer = '1002'",
-            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
+            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART",
+            "ALTER SEQUENCE baustelle_id_seq RESTART"
+
     })
     void getAllBaustellenBesetzung_checkNumberOfEntitiesAfterDeletingTestData_mustBe1() {
         // actual
