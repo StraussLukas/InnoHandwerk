@@ -1,6 +1,7 @@
 package com.example.InnoHandwerk.InnoHandwerk.service;
 
 import com.example.InnoHandwerk.InnoHandwerk.entity.Anhang;
+import com.example.InnoHandwerk.InnoHandwerk.entity.Beitrag;
 import com.example.InnoHandwerk.InnoHandwerk.repository.AnhangRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,9 +46,11 @@ public class AnhangService {
         Integer newId = repository.findTopByOrderByIdDesc().getId() + 1;
         String datei = "../db/files/pic" + newId + ".png";
 
-        Anhang anhang = new Anhang(newId, datei, beitragId);
+        Anhang anhang = new Anhang();
+        anhang.setDatei(datei);
+        anhang.setBeitragId(beitragId);
 
-        repository.save(anhang);
+       // repository.save(anhang);
 
         return datei;
     }
