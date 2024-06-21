@@ -1,5 +1,8 @@
 package com.example.InnoHandwerk.InnoHandwerk.controller;
+import com.example.InnoHandwerk.InnoHandwerk.entity.Baustelle;
 import com.example.InnoHandwerk.InnoHandwerk.entity.Beitrag;
+import com.example.InnoHandwerk.InnoHandwerk.service.BaustelleService;
+import com.example.InnoHandwerk.InnoHandwerk.service.BeitragService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -44,23 +47,48 @@ public class AnhangControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private BeitragService beitragService;
+    @Autowired
+    private BaustelleService baustelleService;
+
     private final Anhang anhang1 = new Anhang();
     private final Anhang anhang2 = new Anhang();
     private final Anhang anhangUpdated = new Anhang();
+    private final Beitrag beitrag = new Beitrag();
+    private final Baustelle baustelle = new Baustelle();
 
     @BeforeAll
     void setUp() {
-        anhang1.setId(-1);
+
+        baustelle.setId(5);
+        baustelle.setTitel("Baustelle 2");
+        baustelle.setName_bauherr("Bauherr2");
+        baustelle.setAdresse("Adresse2");
+        baustelle.setStatus("In Arbeit");
+        baustelle.setTelefon("987654321");
+        baustelle.setEmail("bauherr2@example.com");
+        baustelle.setArbeitsaufwand(20);
+        baustelle.setZeitstempel(Timestamp.valueOf("2024-03-21 10:15:45"));
+
+        baustelleService.addBaustelle(baustelle);
+
+        beitrag.setFreitext("text1");
+        beitrag.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
+        beitrag.setBaustelleId(5);
+        beitrag.setPersonalnummer(100);
+
+        beitragService.addBeitrag(beitrag);
+
         anhang1.setDatei("path1");
-        anhang1.setBeitragId(4);
+        anhang1.setBeitragId(6);
 
-        anhang2.setId(-2);
         anhang2.setDatei("path2");
-        anhang2.setBeitragId(5);
+        anhang2.setBeitragId(6);
 
-        anhangUpdated.setId(-2);
+        anhangUpdated.setId(7);
         anhangUpdated.setDatei("path1");
-        anhangUpdated.setBeitragId(5);
+        anhangUpdated.setBeitragId(6);
     }
     @Test
     @Order(1)
@@ -150,21 +178,21 @@ public class AnhangControllerTest {
                 .andExpect(status().isOk());
 
         this.mockMvc.perform(
-                        get("/anhang/" + "-2")
+                        get("/anhang/" + "7")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(-2))
+                .andExpect(jsonPath("$.id").value(7))
                 .andExpect(jsonPath("$.datei").value("path1"))
-                .andExpect(jsonPath("$.beitragId").value(5));
+                .andExpect(jsonPath("$.beitragId").value(6));
     }
 
     @Test
     @Order(7)
     void getAnaengeByBeitragId_checkNumberOfEntities_MustBe2() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(
-                        get("/anhaengeByBeitrag/" + "1")
+                        get("/anhaengeByBeitrag/" + "6")
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -179,14 +207,14 @@ public class AnhangControllerTest {
     @Order(8)
     void deleteAnhangById_checkIfEntityNoMoreExists_thenStatusOk() throws Exception {
         this.mockMvc.perform(
-                        delete("/anhang/" + "-1")
+                        delete("/anhang/" + "6")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         MvcResult mvcResult = this.mockMvc.perform(
-                        get("/anhang/" + "-1")
+                        get("/anhang/" + "6")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound()).andReturn();
@@ -196,14 +224,14 @@ public class AnhangControllerTest {
     @Order(9)
     void deleteAnhaengeByBeitragId_checkIfEntitysNoMoreExists_thenStatusOk() throws Exception {
         this.mockMvc.perform(
-                        delete("/anhaengeByBeitrag/" + "5")
+                        delete("/anhaengeByBeitrag/" + "6")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         MvcResult mvcResult = this.mockMvc.perform(
-                        get("/anhang/" + "-2")
+                        get("/anhang/" + "7")
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound())
                 .andReturn();
@@ -213,14 +241,14 @@ public class AnhangControllerTest {
     @Order(10)
     void addAnhangRefactored_whenExcuted_thenNumberOfEntitiesmustBe6() throws Exception{
         this.mockMvc.perform(
-                        post("/anhang/" + "4")
+                        post("/anhang/" + "6")
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
 
         MvcResult mvcResult = this.mockMvc.perform(
-                        get("/anhang/" + "6")
+                        get("/anhaengeByBeitrag/" + "6")
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
@@ -230,9 +258,13 @@ public class AnhangControllerTest {
     @Test
     @Order(11)
     @Sql(statements = {
-            "DELETE FROM anhang WHERE id = '-1'",
-            "DELETE FROM anhang WHERE id = '-2'",
-            "DELETE FROM anhang WHERE id = '6'"
+            "DELETE FROM anhang WHERE id = '6'",
+            "DELETE FROM anhang WHERE id = '7'",
+            "DELETE FROM anhang WHERE beitrag_id = '6'",
+            "DELETE FROM beitrag WHERE id = '6'",
+            "ALTER SEQUENCE anhangs_id_seq RESTART",
+            "ALTER SEQUENCE beitrags_id_seq RESTART",
+            "DELETE FROM baustelle WHERE id = '5'"
     })
     void getAllAnhaenge_checkNumberOfEntitiesAfterDeletingTestData_thenStatusOkAndSize5() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(

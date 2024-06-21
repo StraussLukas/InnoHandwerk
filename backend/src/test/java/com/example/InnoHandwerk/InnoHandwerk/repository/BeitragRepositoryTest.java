@@ -29,14 +29,14 @@ public class BeitragRepositoryTest {
 
     @BeforeAll
     void setUp() {
-        beitrag1.setId(-1);
+
         beitrag1.setFreitext("text1");
         beitrag1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
         beitrag1.setBaustelleId(-10);
         beitrag1.setPersonalnummer(-10);
         repository.saveAndFlush(beitrag1);
 
-        beitrag2.setId(-2);
+
         beitrag2.setFreitext("text2");
         beitrag2.setZeitstempel(Timestamp.valueOf("2024-07-14 14:30:00"));
         beitrag2.setBaustelleId(-20);
@@ -109,7 +109,6 @@ public class BeitragRepositoryTest {
         int expectedSize = 3;
         // act
         Beitrag beitrag3 = new Beitrag();
-        beitrag3.setId(-3);
         beitrag3.setFreitext("text3");
         beitrag3.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:35"));
         beitrag3.setBaustelleId(-30);
