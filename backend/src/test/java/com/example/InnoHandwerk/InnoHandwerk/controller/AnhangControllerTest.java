@@ -61,7 +61,6 @@ public class AnhangControllerTest {
     @BeforeAll
     void setUp() {
 
-        baustelle.setId(5);
         baustelle.setTitel("Baustelle 2");
         baustelle.setName_bauherr("Bauherr2");
         baustelle.setAdresse("Adresse2");
@@ -69,7 +68,6 @@ public class AnhangControllerTest {
         baustelle.setTelefon("987654321");
         baustelle.setEmail("bauherr2@example.com");
         baustelle.setArbeitsaufwand(20);
-        baustelle.setZeitstempel(Timestamp.valueOf("2024-03-21 10:15:45"));
 
         baustelleService.addBaustelle(baustelle);
 
@@ -264,7 +262,9 @@ public class AnhangControllerTest {
             "DELETE FROM beitrag WHERE id = '6'",
             "ALTER SEQUENCE anhangs_id_seq RESTART",
             "ALTER SEQUENCE beitrags_id_seq RESTART",
-            "DELETE FROM baustelle WHERE id = '5'"
+            "DELETE FROM baustelle WHERE id = '5'",
+            "ALTER SEQUENCE baustelle_id_seq RESTART"
+
     })
     void getAllAnhaenge_checkNumberOfEntitiesAfterDeletingTestData_thenStatusOkAndSize5() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(
