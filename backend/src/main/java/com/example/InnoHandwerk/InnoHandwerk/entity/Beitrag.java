@@ -6,9 +6,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -28,7 +30,8 @@ public class Beitrag {
     )
     private Integer id;
     private String freitext;
-    private Timestamp zeitstempel;
+    @CreationTimestamp
+    private LocalDateTime zeitstempel;
     @Column(name = "baustelle_id")
     private Integer baustelleId;
     private Integer personalnummer;

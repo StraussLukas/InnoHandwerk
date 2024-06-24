@@ -72,7 +72,6 @@ public class AnhangControllerTest {
         baustelleService.addBaustelle(baustelle);
 
         beitrag.setFreitext("text1");
-        beitrag.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
         beitrag.setBaustelleId(5);
         beitrag.setPersonalnummer(100);
 
