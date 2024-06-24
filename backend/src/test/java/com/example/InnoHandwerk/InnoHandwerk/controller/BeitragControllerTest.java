@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,18 +70,16 @@ public class BeitragControllerTest {
 
 
         beitrag1.setFreitext("Dichtungen des Hauswasserwerks überprüfen");
-        beitrag1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
         beitrag1.setBaustelleId(5);
         beitrag1.setPersonalnummer(100);
 
         beitrag2.setFreitext("text2");
-        beitrag2.setZeitstempel(Timestamp.valueOf("2024-07-14 14:30:00"));
         beitrag2.setBaustelleId(5);
         beitrag2.setPersonalnummer(100);
 
         beitragupdated.setId(7);
         beitragupdated.setFreitext("text3");
-        beitragupdated.setZeitstempel(Timestamp.valueOf("2024-07-14 14:30:00"));
+        beitragupdated.setZeitstempel(LocalDateTime.of(2024,6,21,21,14,45));
         beitragupdated.setBaustelleId(5);
         beitragupdated.setPersonalnummer(100);
     }
@@ -147,7 +146,6 @@ public class BeitragControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(6))
                 .andExpect(jsonPath("$.freitext").value("Dichtungen des Hauswasserwerks überprüfen"))
-               // .andExpect(jsonPath("$.zeitstempel").value(Timestamp.valueOf("2024-01-01 12:00:00")))
                 .andExpect(jsonPath("$.baustelleId").value(5));
     }
 
@@ -181,7 +179,6 @@ public class BeitragControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(7))
                 .andExpect(jsonPath("$.freitext").value("text3"))
-                // .andExpect(jsonPath("$.zeitstempel").value(Timestamp.valueOf("2024-07-14 14:30:00")))
                 .andExpect(jsonPath("$.baustelleId").value(5));
     }
 

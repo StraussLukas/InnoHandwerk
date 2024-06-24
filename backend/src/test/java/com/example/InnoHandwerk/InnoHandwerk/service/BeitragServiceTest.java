@@ -48,13 +48,11 @@ public class BeitragServiceTest {
 
 
         beitrag1.setFreitext("text1");
-        beitrag1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
         beitrag1.setBaustelleId(5);
         beitrag1.setPersonalnummer(100);
 
 
         beitrag2.setFreitext("text2");
-        beitrag2.setZeitstempel(Timestamp.valueOf("2024-07-14 14:30:00"));
         beitrag2.setBaustelleId(5);
         beitrag2.setPersonalnummer(100);
     }
@@ -121,7 +119,7 @@ public class BeitragServiceTest {
         var updatedBeitrag = new Beitrag();
         updatedBeitrag.setId(6);
         updatedBeitrag.setFreitext("text3");
-        updatedBeitrag.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
+        updatedBeitrag.setZeitstempel(LocalDateTime.of(2024,6,21,21,14,45));
         updatedBeitrag.setBaustelleId(5);
         updatedBeitrag.setPersonalnummer(100);
         //actual
