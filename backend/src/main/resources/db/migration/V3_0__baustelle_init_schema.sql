@@ -1,3 +1,4 @@
+CREATE SEQUENCE IF NOT EXISTS baustelle_id_seq START WITH 5 INCREMENT BY 1;
 CREATE TABLE baustelle(
                                     id INTEGER NOT NULL Primary KEY,
                                     titel VARCHAR(255) NOT NULL,

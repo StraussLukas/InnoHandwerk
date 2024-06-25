@@ -85,7 +85,7 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   loadMessages(baustellenId: number) {
-    const messagesUrl = `http://localhost:8080/beitrag`;
+    const messagesUrl = `http://localhost:8080/beitraege`;
     console.log('Loading messages from URL:', messagesUrl);
     this.client.get<Beitrag[]>(messagesUrl)
       .subscribe(data => {
