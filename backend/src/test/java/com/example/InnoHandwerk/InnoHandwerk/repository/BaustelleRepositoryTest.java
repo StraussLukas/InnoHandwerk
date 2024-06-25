@@ -26,7 +26,6 @@ public class BaustelleRepositoryTest {
 
     @BeforeAll
     void setUp(){
-        baustelle1.setId(1);
         baustelle1.setTitel("Baustelle 1");
         baustelle1.setName_bauherr("Bauherr1");
         baustelle1.setAdresse("Adresse1");
@@ -34,10 +33,8 @@ public class BaustelleRepositoryTest {
         baustelle1.setTelefon("123456789");
         baustelle1.setEmail("bauherr1@example.com");
         baustelle1.setArbeitsaufwand(10);
-        baustelle1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
         repository.saveAndFlush(baustelle1);
 
-        baustelle2.setId(2);
         baustelle2.setTitel("Baustelle 2");
         baustelle2.setName_bauherr("Bauherr2");
         baustelle2.setAdresse("Adresse2");
@@ -45,7 +42,6 @@ public class BaustelleRepositoryTest {
         baustelle2.setTelefon("987654321");
         baustelle2.setEmail("bauherr2@example.com");
         baustelle2.setArbeitsaufwand(20);
-        baustelle2.setZeitstempel(Timestamp.valueOf("2024-03-21 10:15:45"));
         repository.saveAndFlush(baustelle2);
     }
 
@@ -65,7 +61,7 @@ public class BaustelleRepositoryTest {
     @Test
     void findByID_whenFound_thenReturnEntity(){
         // act
-        var actual = repository.findById(1);
+        var actual = repository.findById(5);
         // assert
         assertThat(actual.get().getName_bauherr()).isEqualTo("Bauherr1");
         assertThat(actual.get().getAdresse()).isEqualTo("Adresse1");
@@ -78,7 +74,7 @@ public class BaustelleRepositoryTest {
     void update_whenSuccesfull_thenEntityIsNowUpdated(){
         // arrange
         var updatedBaustelle = new Baustelle();
-        updatedBaustelle.setId(1);
+        updatedBaustelle.setId(5);
         updatedBaustelle.setName_bauherr("UpdatedBauherr");
         updatedBaustelle.setAdresse("UpdatedAdresse");
         updatedBaustelle.setTelefon("987654321");
@@ -86,7 +82,7 @@ public class BaustelleRepositoryTest {
         updatedBaustelle.setArbeitsaufwand(30);
         // act
         repository.save(updatedBaustelle);
-        var actual = repository.findById(1);
+        var actual = repository.findById(5);
         // assert
         assertThat(actual.get().getName_bauherr()).isEqualTo("UpdatedBauherr");
         assertThat(actual.get().getAdresse()).isEqualTo("UpdatedAdresse");
@@ -102,7 +98,7 @@ public class BaustelleRepositoryTest {
         var actualEntities = repository.findAllByStatusOrderByZeitstempelAsc("Erstellt");
         // assert
         assertThat(actualEntities).hasSize(1);
-        assertThat(actualEntities.get(0).getId()).isEqualTo(1);
+        assertThat(actualEntities.get(0).getId()).isEqualTo(5);
 
     }
 

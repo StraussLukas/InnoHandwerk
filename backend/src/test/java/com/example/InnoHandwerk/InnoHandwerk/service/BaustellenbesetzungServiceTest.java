@@ -1,6 +1,8 @@
 package com.example.InnoHandwerk.InnoHandwerk.service;
 
+import com.example.InnoHandwerk.InnoHandwerk.entity.Baustelle;
 import com.example.InnoHandwerk.InnoHandwerk.entity.Baustellenbesetzung;
+import com.example.InnoHandwerk.InnoHandwerk.entity.Mitarbeiter;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.sql.Time;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,13 +26,63 @@ public class BaustellenbesetzungServiceTest {
     @Autowired
     private BaustellenBesetzungService service;
 
+    @Autowired
+    private  BaustelleService baustelleService;
+
+    @Autowired
+    private MitarbeiterService mitarbeiterService;
+
     private final Baustellenbesetzung besetzung1 = new Baustellenbesetzung();
     private final Baustellenbesetzung besetzung2 = new Baustellenbesetzung();
     private final Baustellenbesetzung besetzung3 = new Baustellenbesetzung();
 
+    private final Baustelle baustelle = new Baustelle();
+    private final Baustelle baustelle2 = new Baustelle();
+
+
+    private final Mitarbeiter mitarbeiter1001 = new Mitarbeiter();
+    private final Mitarbeiter mitarbeiter1002 = new Mitarbeiter();
 
     @BeforeAll
     void setUp() {
+        mitarbeiter1001.setPersonalnummer(1001);
+        mitarbeiter1001.setVorname("Max");
+        mitarbeiter1001.setNachname("Meier");
+        mitarbeiter1001.setEmail("maxmeier@email.com");
+        mitarbeiter1001.setAdmin(true);
+
+        mitarbeiter1002.setPersonalnummer(1002);
+        mitarbeiter1002.setVorname("Maria");
+        mitarbeiter1002.setNachname("Meier");
+        mitarbeiter1002.setEmail("mariameier@email.com");
+        mitarbeiter1002.setAdmin(false);
+
+        mitarbeiterService.addMitarbeiter(mitarbeiter1001);
+        mitarbeiterService.addMitarbeiter(mitarbeiter1002);
+
+        baustelle.setTitel("Baustelle 1");
+        baustelle.setName_bauherr("Bauherr1");
+        baustelle.setAdresse("Adresse1");
+        baustelle.setStatus("Erstellt");
+        baustelle.setTelefon("123456789");
+        baustelle.setEmail("bauherr1@example.com");
+        baustelle.setArbeitsaufwand(10);
+
+
+        baustelleService.addBaustelle(baustelle);
+
+        baustelle2.setTitel("Baustelle 1");
+        baustelle2.setName_bauherr("Bauherr1");
+        baustelle2.setAdresse("Adresse1");
+        baustelle2.setStatus("Erstellt");
+        baustelle2.setTelefon("123456789");
+        baustelle2.setEmail("bauherr1@example.com");
+        baustelle2.setArbeitsaufwand(10);
+
+
+        baustelleService.addBaustelle(baustelle2);
+
+
         besetzung1.setPersonalnummer(1001);
         besetzung1.setBaustellenId(5);
         besetzung1.setDatum(20230530.0);
@@ -94,7 +147,7 @@ public class BaustellenbesetzungServiceTest {
         List<Baustellenbesetzung> actualEntity = service.getBaustellenBesetzungByBaustellenId(6);
         // assert
         assertThat(actualEntity).isNotEmpty();
-        assertEquals(1002, actualEntity.get(0).getPersonalnummer());
+        assertEquals(5, actualEntity.get(0).getPersonalnummer());
     }
 
     @Order(5)
@@ -117,14 +170,14 @@ public class BaustellenbesetzungServiceTest {
     @Test
     void updateBaustellenBesetzung_whenValidModel_thenReturnEntityId() {
         // arrange
-        besetzung1.setBaustellenId(7);
+        besetzung1.setBaustellenId(6);
         // actual
         var actualId = service.updateBaustellenBesetzung(besetzung1);
         var actualEntities = service.getBaustellenBesetzungByBaustellenId(7);
         // assert
         assertEquals(5, actualId);
         assertThat(actualEntities).isNotNull();
-        assertEquals(7, actualEntities.get(0).getBaustellenId());
+        assertEquals(6, actualEntities.get(0).getBaustellenId());
     }
 
     @Order(8)
@@ -140,10 +193,16 @@ public class BaustellenbesetzungServiceTest {
     @Order(9)
     @Test
     @Sql(statements = {
-            "DELETE FROM baustellenbesetzung WHERE id = 5",
-            "DELETE FROM baustellenbesetzung WHERE id = 6",
-            "DELETE FROM baustellenbesetzung WHERE id = 7",
-            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
+            "DELETE FROM baustellenbesetzung WHERE id = '5'",
+            "DELETE FROM baustellenbesetzung WHERE id = '6'",
+            "DELETE FROM baustellenbesetzung WHERE id = '7'",
+            "DELETE FROM baustelle WHERE id = '5'",
+            "DELETE FROM baustelle WHERE id = '6'",
+            "DELETE FROM mitarbeiter WHERE personalnummer = '1001'",
+            "DELETE FROM mitarbeiter WHERE personalnummer = '1002'",
+            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART",
+            "ALTER SEQUENCE baustelle_id_seq RESTART"
+
     })
     void getAllBaustellenBesetzung_checkNumberOfEntitiesAfterDeletingTestData_mustBe1() {
         // actual

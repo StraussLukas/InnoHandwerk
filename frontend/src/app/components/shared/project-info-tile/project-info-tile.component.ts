@@ -1,5 +1,7 @@
-import {Component, input, Input} from '@angular/core';
+import {Component, Input} from '@angular/core';
 import {NgForOf, NgIf} from "@angular/common";
+import {ConstructionSite} from "../../../model/constructionSite";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-project-info-tile',
@@ -13,6 +15,17 @@ import {NgForOf, NgIf} from "@angular/common";
 })
 export class ProjectInfoTileComponent {
 
-  @Input() project: any;
+  @Input() project: ConstructionSite | undefined;
   @Input() isDashboard = false;
+  @Input() personalnummer: number | null = null;
+
+  constructor(private router: Router) {}
+
+  navigateToProjectDetail() {
+    if (this.project && this.project.id && this.personalnummer) {
+      this.router.navigate([`/projectdetail/${this.personalnummer}/${this.project.id}`]);
+    } else {
+      console.error('Projekt- oder Personalnummer fehlen.');
+    }
+  }
 }

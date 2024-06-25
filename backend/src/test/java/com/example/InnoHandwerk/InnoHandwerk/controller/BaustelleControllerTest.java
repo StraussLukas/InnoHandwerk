@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MvcResult;
 
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +48,6 @@ public class BaustelleControllerTest {
 
     @BeforeAll
     void setUp() {
-        validBaustelle1.setId(5);
         validBaustelle1.setTitel("Baustelle 1");
         validBaustelle1.setName_bauherr("Bauherr1");
         validBaustelle1.setAdresse("Adresse1");
@@ -55,9 +55,7 @@ public class BaustelleControllerTest {
         validBaustelle1.setTelefon("123456789");
         validBaustelle1.setEmail("bauherr1@example.com");
         validBaustelle1.setArbeitsaufwand(10);
-        validBaustelle1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
 
-        validBaustelle2.setId(6);
         validBaustelle2.setTitel("Baustelle 2");
         validBaustelle2.setName_bauherr("Bauherr2");
         validBaustelle2.setAdresse("Adresse2");
@@ -65,7 +63,6 @@ public class BaustelleControllerTest {
         validBaustelle2.setTelefon("987654321");
         validBaustelle2.setEmail("bauherr2@example.com");
         validBaustelle2.setArbeitsaufwand(20);
-        validBaustelle2.setZeitstempel(Timestamp.valueOf("2024-03-21 10:15:45"));
 
         updatedBaustelle2.setId(6);
         updatedBaustelle2.setTitel("Baustelle 2");
@@ -75,7 +72,7 @@ public class BaustelleControllerTest {
         updatedBaustelle2.setTelefon("987654321");
         updatedBaustelle2.setEmail("bauherr2@example.com");
         updatedBaustelle2.setArbeitsaufwand(45);
-        updatedBaustelle2.setZeitstempel(Timestamp.valueOf("2024-03-21 10:15:45"));
+        updatedBaustelle2.setZeitstempel(LocalDateTime.of(2024,6,21,21,14,45));
 
         baustellenbesetzung1.setPersonalnummer(500);
         baustellenbesetzung1.setBaustellenId(5);
@@ -171,7 +168,7 @@ public class BaustelleControllerTest {
         String contentAsString = mvcResult.getResponse().getContentAsString();
         List<Baustelle> result = objectMapper.readValue(contentAsString, new TypeReference<>() {});
         assertThat(result).hasSize(2);
-        assertThat(result.get(0).getId()).isEqualTo(5);
+        assertThat(result.get(0).getId()).isEqualTo(1);
 
     }
 
@@ -252,9 +249,14 @@ public class BaustelleControllerTest {
 
     @Test
     @Order(9)
+    @Sql(statements = {
+            "DELETE FROM baustellenbesetzung WHERE id = 5",
+            "DELETE FROM baustellenbesetzung WHERE id = 6",
+            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
+    })
     void deleteBaustelleById_thenStatusOk() throws Exception {
         this.mockMvc.perform(
-                        delete("/baustelle/" + 5)
+                        delete("/baustelle/" + 6)
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -266,9 +268,8 @@ public class BaustelleControllerTest {
     @Sql(statements = {
             "DELETE FROM baustelle WHERE id = 5",
             "DELETE FROM baustelle WHERE id = 6",
-            "DELETE FROM baustellenbesetzung WHERE id = 5",
-            "DELETE FROM baustellenbesetzung WHERE id = 6",
-            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
+            "ALTER SEQUENCE baustelle_id_seq RESTART"
+
     })
     void getAllBaustelle_checkNumberOfEntitiesAfterDeletingTestData_mustBe4() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(

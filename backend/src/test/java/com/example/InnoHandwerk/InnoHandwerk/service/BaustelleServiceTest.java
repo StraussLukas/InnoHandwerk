@@ -37,7 +37,6 @@ public class BaustelleServiceTest {
 
     @BeforeAll
     void setUp() {
-        baustelle1.setId(5);
         baustelle1.setTitel("Baustelle 1");
         baustelle1.setName_bauherr("Bauherr1");
         baustelle1.setAdresse("Adresse1");
@@ -45,9 +44,7 @@ public class BaustelleServiceTest {
         baustelle1.setTelefon("123456789");
         baustelle1.setEmail("bauherr1@example.com");
         baustelle1.setArbeitsaufwand(10);
-        baustelle1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
 
-        baustelle2.setId(6);
         baustelle2.setTitel("Baustelle 2");
         baustelle2.setName_bauherr("Bauherr2");
         baustelle2.setAdresse("Adresse2");
@@ -55,7 +52,6 @@ public class BaustelleServiceTest {
         baustelle2.setTelefon("987654321");
         baustelle2.setEmail("bauherr2@example.com");
         baustelle2.setArbeitsaufwand(20);
-        baustelle2.setZeitstempel(Timestamp.valueOf("2024-03-21 10:15:45"));
 
         baustellenbesetzung1.setPersonalnummer(500);
         baustellenbesetzung1.setBaustellenId(5);
@@ -136,7 +132,7 @@ public class BaustelleServiceTest {
         var actualEntities = service.getAllBaustellenByStatus("Erstellt");
         // assert
         assertThat(actualEntities).hasSize(2);
-        assertThat(actualEntities.get(0).getId()).isEqualTo(5);
+        assertThat(actualEntities.get(0).getId()).isEqualTo(1);
 
     }
 
@@ -164,16 +160,6 @@ public class BaustelleServiceTest {
 
     @Order(9)
     @Test
-    void deleteBaustelleById_whenSuccessful_thenSizeMustBe5() {
-        // actual
-        service.deleteBaustelleById(5);
-        var actualEntities = service.getAllBaustelle();
-        // assert
-        assertEquals(5, actualEntities.size());
-    }
-
-    @Order(10)
-    @Test
     void getBaustellenByPersonalnummer_whenEntityExists_thenReturnList() {
         // actual
         List<Baustelle> actualEntities = service.getAllBaustellenByPersonalnummer(100);
@@ -186,15 +172,32 @@ public class BaustelleServiceTest {
     }
 
 
+
+    @Order(10)
+    @Test
+    @Sql(statements = {
+            "DELETE FROM baustellenbesetzung WHERE id = 5",
+            "DELETE FROM baustellenbesetzung WHERE id = 6",
+            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
+
+
+    })
+    void deleteBaustelleById_whenSuccessful_thenSizeMustBe5() {
+        // actual
+        service.deleteBaustelleById(5);
+        var actualEntities = service.getAllBaustelle();
+        // assert
+        assertEquals(5, actualEntities.size());
+    }
+
+
+
     @Order(11)
     @Test
     @Sql(statements = {
             "DELETE FROM baustelle WHERE id = 5",
             "DELETE FROM baustelle WHERE id = 6",
-            "DELETE FROM baustellenbesetzung WHERE id = 5",
-            "DELETE FROM baustellenbesetzung WHERE id = 6",
-            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
-
+            "ALTER SEQUENCE baustelle_id_seq RESTART"
 
     })
     void getAllBaustelle_checkNumberOfEntitiesAfterDeletingTestData_mustBe4() {

@@ -29,12 +29,12 @@ public class AnhangRepositoryTest {
 
     @BeforeAll
     void setUp() {
-        anhang1.setId(-1);
+
         anhang1.setDatei("path1");
         anhang1.setBeitragId(5);
         repository.saveAndFlush(anhang1);
 
-        anhang2.setId(-2);
+
         anhang2.setDatei("path2");
         anhang2.setBeitragId(4);
         repository.saveAndFlush(anhang2);
@@ -113,6 +113,17 @@ public class AnhangRepositoryTest {
         // assert
         assertThat(actual).hasSize(expectedSize);
         assertThat(repository.findById(anhang3.getId()).isPresent());
+    }
+
+    @Test
+    void findTopByOrderByIdDesc_thenResultThenResultHasCertainID(){
+        // arrange
+        int expectedSize = 1;
+        // act
+        var actual = repository.findTopByOrderByIdDesc();
+        // assert
+        assertThat(actual).isNotNull();
+        assertThat(actual.getId()).isEqualTo(7);
     }
 
     @AfterAll
