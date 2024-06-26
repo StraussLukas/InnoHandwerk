@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.sql.Time;
+import java.sql.Date;
 
 @Entity
 @Getter
@@ -27,7 +28,7 @@ public class Baustellenbesetzung {
     private Integer id;
     private Integer personalnummer;
     private Integer baustellenId;
-    private Double datum;
+    private Date datum;
     private Time uhrzeitVon;
     private Time uhrzeitBis;
 }
