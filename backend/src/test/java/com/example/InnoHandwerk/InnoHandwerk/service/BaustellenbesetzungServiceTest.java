@@ -9,8 +9,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -85,19 +87,19 @@ public class BaustellenbesetzungServiceTest {
 
         besetzung1.setPersonalnummer(1001);
         besetzung1.setBaustellenId(5);
-        besetzung1.setDatum(20230530.0);
+        besetzung1.setDatum(Date.valueOf(LocalDate.of(2024, 6, 24)));
         besetzung1.setUhrzeitVon(Time.valueOf("08:00:00"));
         besetzung1.setUhrzeitBis(Time.valueOf("16:00:00"));
 
         besetzung2.setPersonalnummer(1002);
         besetzung2.setBaustellenId(6);
-        besetzung2.setDatum(20230530.0);
+        besetzung2.setDatum(Date.valueOf(LocalDate.of(2024, 6, 24)));
         besetzung2.setUhrzeitVon(Time.valueOf("09:00:00"));
         besetzung2.setUhrzeitBis(Time.valueOf("17:00:00"));
 
         besetzung3.setPersonalnummer(1001);
         besetzung3.setBaustellenId(6);
-        besetzung3.setDatum(20230530.0);
+        besetzung3.setDatum(Date.valueOf(LocalDate.of(2024, 6, 24)));
         besetzung3.setUhrzeitVon(Time.valueOf("08:00:00"));
         besetzung3.setUhrzeitBis(Time.valueOf("16:00:00"));
     }
@@ -144,17 +146,17 @@ public class BaustellenbesetzungServiceTest {
     @Test
     void getBaustellenBesetzungByPersonalnummer_whenEntityExists_thenReturnEntity() {
         // actual
-        List<Baustellenbesetzung> actualEntity = service.getBaustellenBesetzungByBaustellenId(6);
+        List<Baustellenbesetzung> actualEntity = service.getBaustellenBesetzungByBaustellenIdAndDatum(6, Date.valueOf(LocalDate.of(2024, 6, 24)));
         // assert
         assertThat(actualEntity).isNotEmpty();
-        assertEquals(5, actualEntity.get(0).getPersonalnummer());
+        assertEquals(1002, actualEntity.get(0).getPersonalnummer());
     }
 
     @Order(5)
     @Test
     void getBaustellenBesetzungByPersonalnummer_whenEntityNotExists_thenReturnThrowException() {
         // assert
-        assertThat(service.getBaustellenBesetzungByBaustellenId(-9999)).isEmpty();
+        assertThat(service.getBaustellenBesetzungByBaustellenIdAndDatum(-9999, Date.valueOf(LocalDate.of(2024, 6, 24)))).isEmpty();
     }
 
     @Order(6)
@@ -173,7 +175,7 @@ public class BaustellenbesetzungServiceTest {
         besetzung1.setBaustellenId(6);
         // actual
         var actualId = service.updateBaustellenBesetzung(besetzung1);
-        var actualEntities = service.getBaustellenBesetzungByBaustellenId(7);
+        var actualEntities = service.getBaustellenBesetzungByBaustellenIdAndDatum(6, Date.valueOf(LocalDate.of(2024, 6, 24)));
         // assert
         assertEquals(5, actualId);
         assertThat(actualEntities).isNotNull();

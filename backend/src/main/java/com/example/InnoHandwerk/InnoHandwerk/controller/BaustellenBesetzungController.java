@@ -3,10 +3,13 @@ package com.example.InnoHandwerk.InnoHandwerk.controller;
 import com.example.InnoHandwerk.InnoHandwerk.service.BaustellenBesetzungService;
 import com.example.InnoHandwerk.InnoHandwerk.entity.Baustellenbesetzung;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -27,8 +30,10 @@ public class BaustellenBesetzungController {
     }
 
     @GetMapping(value = "/baustellenBesetzung/{baustellenId}")
-    public List<Baustellenbesetzung> getBaustellenBesetzungByBaustellenId(@PathVariable Integer baustellenId){
-        return service.getBaustellenBesetzungByBaustellenId(baustellenId);
+    public List<Baustellenbesetzung> getBaustellenBesetzungByBaustellenIdAndDatum(
+            @PathVariable Integer baustellenId,
+            @RequestParam("datum") Date datum) {
+        return service.getBaustellenBesetzungByBaustellenIdAndDatum(baustellenId, datum);
     }
 
     @PutMapping(value = "/baustellenBesetzung")

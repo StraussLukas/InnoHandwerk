@@ -3,7 +3,7 @@ CREATE TABLE baustellenbesetzung(
                           id INTEGER NOT NULL PRIMARY KEY,
                           personalnummer INTEGER NOT NULL,
                           baustellen_id INTEGER NOT NULL,
-                          datum DOUBLE NOT NULL,
+                          datum DATE NOT NULL,
                           uhrzeit_von TIME NOT NULL,
                           uhrzeit_bis TIME NOT NULL,
                           FOREIGN KEY (personalnummer) REFERENCES mitarbeiter(personalnummer),

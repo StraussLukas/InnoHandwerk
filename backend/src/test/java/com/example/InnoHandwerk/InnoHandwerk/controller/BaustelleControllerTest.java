@@ -15,8 +15,10 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -76,13 +78,13 @@ public class BaustelleControllerTest {
 
         baustellenbesetzung1.setPersonalnummer(500);
         baustellenbesetzung1.setBaustellenId(5);
-        baustellenbesetzung1.setDatum(20230530.0);
+        baustellenbesetzung1.setDatum(Date.valueOf(LocalDate.of(2024, 6, 24)));
         baustellenbesetzung1.setUhrzeitVon(Time.valueOf("08:00:00"));
         baustellenbesetzung1.setUhrzeitBis(Time.valueOf("16:00:00"));
 
         baustellenbesetzung2.setPersonalnummer(500);
         baustellenbesetzung2.setBaustellenId(6);
-        baustellenbesetzung2.setDatum(20230530.0);
+        baustellenbesetzung2.setDatum(Date.valueOf(LocalDate.of(2024, 6, 24)));
         baustellenbesetzung2.setUhrzeitVon(Time.valueOf("08:00:00"));
         baustellenbesetzung2.setUhrzeitBis(Time.valueOf("16:00:00"));
     }
