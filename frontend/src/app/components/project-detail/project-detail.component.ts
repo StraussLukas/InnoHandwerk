@@ -27,11 +27,12 @@ export interface Beitrag {
 })
 export class ProjectDetailComponent implements OnInit {
   project: ConstructionSite = {};
-  messages: { text: string, timestamp: Date, user: string, images: string[] }[] = [];
+  messages: { personalnummer: number, timestamp?: Date, user?: string, text: string, images: string[] }[] = [];
   newMessage: string = '';
   selectedFiles: File[] = [];
   projectIDUrl?: number | null;
   personalnummerUrl!: number | null;
+  mitarbeiterDaten: Employee = {};
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
@@ -55,6 +56,22 @@ export class ProjectDetailComponent implements OnInit {
           console.error('Fehler beim Laden der Baustelle:', error);
         });
 
+      const parameterFromUrl = this.route.snapshot.paramMap.get('personalnummer');
+      if (parameterFromUrl !== null && !isNaN(+parameterFromUrl)) {
+        this.personalnummerUrl = +parameterFromUrl;
+      } else {
+        this.personalnummerUrl = null;
+      }
+      this.client.get<Employee>(`http://localhost:8080/mitarbeiter/${this.personalnummerUrl}`)
+        .subscribe(data => {
+          this.mitarbeiterDaten.vorname = data.vorname;
+          this.mitarbeiterDaten.nachname = data.nachname;
+          this.mitarbeiterDaten.admin = data.admin;
+          this.mitarbeiterDaten.personalnummer= data.personalnummer;
+        }, error => {
+          console.error('Fehler beim Laden der Mitarbeiterdaten:', error);
+        });
+
       this.loadMessages(this.projectIDUrl);
     }
   }
@@ -69,6 +86,27 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   loadMessages(baustellenId: number) {
+    let testMessages: { personalnummer: number, timestamp?: Date, user?: string, text: string, images: string[] }[]  = [];
+
+    if (baustellenId === 1) {
+      testMessages = [
+        {
+          personalnummer: 100,
+          text: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+          timestamp: new Date('2024-06-23T09:30:00'),
+          user: "Hans Müller",
+          images: ["assets/testdaten/baustelle-rohbau-einfamilienhaus-superingo-adobestock.jpg", "assets/testdaten/fertighausexperte.jpg"]
+        },
+        {
+          personalnummer: 100,
+          text: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+          timestamp: new Date('2024-06-24T19:30:00'),
+          user: "Hans Müller",
+          images: []
+        }
+      ];
+    }
+
     const messagesUrl = `http://localhost:8080/beitraege`;
     console.log('Loading messages from URL:', messagesUrl);
     this.client.get<Beitrag[]>(messagesUrl)
@@ -77,17 +115,19 @@ export class ProjectDetailComponent implements OnInit {
           .map(beitrag =>
             this.loadEmployeeData(beitrag.personalnummer!).pipe(
               map(employee => ({
+                personalnummer: beitrag.personalnummer!,
                 text: beitrag.freitext || '',
                 timestamp: new Date(beitrag.zeitstempel || ''),
                 user: `${employee.vorname} ${employee.nachname}`,
-                images: [] // Assuming no images provided in `Beitrag`
+                images: []
               }))
             )
           );
 
         forkJoin(employeeObservables).subscribe(messages => {
-          this.messages = messages;
+          this.messages = [...testMessages, ...messages];
         });
+
       }, error => {
         console.error('Fehler beim Laden der Nachrichten:', error);
       });
@@ -98,22 +138,13 @@ export class ProjectDetailComponent implements OnInit {
       const newMsg: Beitrag = {
         freitext: this.newMessage,
         baustelleId: this.projectIDUrl,
-        personalnummer: 100, // Beispielbenutzer
-        zeitstempel: new Date().toISOString(),
+        personalnummer: this.mitarbeiterDaten.personalnummer!,
       };
 
       // Nachricht an Backend senden
       this.client.post<Beitrag>('http://localhost:8080/beitrag', newMsg)
         .subscribe(
           response => {
-            this.loadEmployeeData(response.personalnummer!).subscribe(employee => {
-              this.messages.push({
-                text: response.freitext || '',
-                timestamp: new Date(response.zeitstempel || ''),
-                user: `${employee.vorname} ${employee.nachname}`,
-                images: this.selectedFiles.map(file => URL.createObjectURL(file))
-              });
-            });
             this.newMessage = '';
             this.selectedFiles = [];
             this.fileInput.nativeElement.value = '';
@@ -122,6 +153,7 @@ export class ProjectDetailComponent implements OnInit {
             console.error('Fehler beim Senden der Nachricht:', error);
           }
         );
+         window.location.reload();
     }
   }
 

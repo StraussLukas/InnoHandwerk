@@ -1,0 +1,50 @@
+<div class="project-form-container">
+  <div class="drag-drop-area">
+    <div class="drag-drop-square" (drop)="onDrop($event)" (dragover)="onDragOver($event)">
+      <p *ngIf="!imagePreview">Bild hierher ziehen um es auszuwählen</p>
+      <img *ngIf="imagePreview" [src]="imagePreview" alt="Image Preview" class="image-preview">
+    </div>
+    <div class="button-group">
+      <input type="file" id="fileInput" (change)="onFileSelected($event)" hidden>
+      <button class="select-button" (click)="selectFile()">Datei auswählen</button>
+      <button class="delete-button" (click)="deleteImage()" [disabled]="!imagePreview">Löschen</button>
+    </div>
+  </div>
+  <div class="form-container" [formGroup]="projectForm">
+    <div class="form-group">
+      <label for="title">Titel</label>
+      <input type="text" id="title" formControlName="titel">
+    </div>
+    <div class="form-group">
+      <label for="client">Bauherr</label>
+      <input type="text" id="client" formControlName="name_bauherr">
+    </div>
+    <div class="form-group">
+      <label for="address">Adresse</label>
+      <input type="text" id="address" formControlName="adresse">
+    </div>
+    <div class="form-group">
+      <label for="status">Status</label>
+      <select id="status" formControlName="status">
+        <option value="Erstellt">Erstellt</option>
+        <option value="In Arbeit">In Arbeit</option>
+        <option value="Abgeschlossen">Abgeschlossen</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="phone">Telefon</label>
+      <input type="text" id="phone" formControlName="telefon">
+    </div>
+    <div class="form-group">
+      <label for="email">E-Mail</label>
+      <input type="email" id="email" formControlName="email">
+    </div>
+    <div class="form-group">
+      <label for="effort">Arbeitsaufwand</label>
+      <input type="text" id="effort" formControlName="arbeitsaufwand">
+    </div>
+    <div class="button-group-create">
+      <button class="create-button" (click)="submitForm()">{{ buttonLabel }}</button>
+    </div>
+  </div>
+</div>
