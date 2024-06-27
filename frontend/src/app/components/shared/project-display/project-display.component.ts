@@ -16,15 +16,13 @@ export class ProjectDisplayComponent {
   @Output() formSubmit: EventEmitter<any> = new EventEmitter();
 
   @Input() projectForm: FormGroup = this.fb.group({
-    id: [10],
     titel: ['', Validators.required],
     name_bauherr: ['', Validators.required],
     adresse: ['', Validators.required],
     status: ['', Validators.required],
     telefon: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    arbeitsaufwand: ['', Validators.required],
-    zeitstempel: [new Date().toISOString(), Validators.required]
+    arbeitsaufwand: ['', Validators.required]
   });
   imagePreview: string | ArrayBuffer | null = null;
   selectedFile: File | null = null;
