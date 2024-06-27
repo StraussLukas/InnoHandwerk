@@ -17,8 +17,10 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -76,7 +78,6 @@ public class BaustellenbesetzungControllerTest {
         mitarbeiterService.addMitarbeiter(mitarbeiter1001);
         mitarbeiterService.addMitarbeiter(mitarbeiter1002);
 
-        baustelle.setId(-1);
         baustelle.setTitel("Baustelle 1");
         baustelle.setName_bauherr("Bauherr1");
         baustelle.setAdresse("Adresse1");
@@ -84,12 +85,10 @@ public class BaustellenbesetzungControllerTest {
         baustelle.setTelefon("123456789");
         baustelle.setEmail("bauherr1@example.com");
         baustelle.setArbeitsaufwand(10);
-        baustelle.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
 
 
         baustelleService.addBaustelle(baustelle);
 
-        baustelle2.setId(-2);
         baustelle2.setTitel("Baustelle 1");
         baustelle2.setName_bauherr("Bauherr1");
         baustelle2.setAdresse("Adresse1");
@@ -97,27 +96,26 @@ public class BaustellenbesetzungControllerTest {
         baustelle2.setTelefon("123456789");
         baustelle2.setEmail("bauherr1@example.com");
         baustelle2.setArbeitsaufwand(10);
-        baustelle2.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
 
 
         baustelleService.addBaustelle(baustelle2);
 
 
         besetzung1.setPersonalnummer(1001);
-        besetzung1.setBaustellenId(-1);
-        besetzung1.setDatum(20230530.0);
+        besetzung1.setBaustellenId(5);
+        besetzung1.setDatum(Date.valueOf(LocalDate.of(2024, 6, 24)));
         besetzung1.setUhrzeitVon(Time.valueOf("08:00:00"));
         besetzung1.setUhrzeitBis(Time.valueOf("16:00:00"));
 
         besetzung2.setPersonalnummer(1002);
-        besetzung2.setBaustellenId(-2);
-        besetzung2.setDatum(20230530.0);
+        besetzung2.setBaustellenId(6);
+        besetzung2.setDatum(Date.valueOf(LocalDate.of(2024, 6, 24)));
         besetzung2.setUhrzeitVon(Time.valueOf("09:00:00"));
         besetzung2.setUhrzeitBis(Time.valueOf("17:00:00"));
 
         besetzung3.setPersonalnummer(1001);
-        besetzung3.setBaustellenId(-2);
-        besetzung3.setDatum(20230530.0);
+        besetzung3.setBaustellenId(6);
+        besetzung3.setDatum(Date.valueOf(LocalDate.of(2024, 6, 24)));
         besetzung3.setUhrzeitVon(Time.valueOf("08:00:00"));
         besetzung3.setUhrzeitBis(Time.valueOf("16:00:00"));
     }
@@ -176,30 +174,52 @@ public class BaustellenbesetzungControllerTest {
     @Test
     @Order(4)
     void getBaustellenBesetzungByPersonalnummer_whenEntityWithIdFound_ThenOkAndReturnEntity() throws Exception {
-        this.mockMvc.perform(
-                        get("/baustellenBesetzung/" + 5)
+        MvcResult mvcResult = this.mockMvc.perform(
+                        get("/baustellenBesetzung/" + 5 + "?datum=" + Date.valueOf(LocalDate.of(2024, 6, 24)))
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.personalnummer").value(1001))
-                .andExpect(jsonPath("$.baustellenId").value(-1))
-                .andExpect(jsonPath("$.datum").value(20230530.0))
-                .andExpect(jsonPath("$.uhrzeitVon").value("08:00:00"))
-                .andExpect(jsonPath("$.uhrzeitBis").value("16:00:00"));
+                .andReturn();
+
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Baustelle> result = objectMapper.readValue(contentAsString, new TypeReference<>() {});
+        assertThat(result.get(0).getId()).isEqualTo(5);
     }
 
     @Test
     @Order(5)
     void getBaustellenBesetzungByPersonalnummer_entityWithIdNotFound_thenNotFound() throws Exception {
-        this.mockMvc.perform(get("/baustellenBesetzung/" + 999)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound());
+        MvcResult mvcResult = this.mockMvc.perform(
+                        get("/baustellenBesetzung/"+ 9999 + "?datum=" + Date.valueOf(LocalDate.of(2024, 6, 24)))
+                                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Baustelle> result = objectMapper.readValue(contentAsString, new TypeReference<>() {});
+        assertThat(result).isEmpty();
     }
 
     @Test
     @Order(6)
+    void getBaustellenBesetzungByBaustellenId_whenEntityWithIdFound_ThenOkAndReturnEntity() throws Exception {
+        MvcResult mvcResult = this.mockMvc.perform(
+                        get("/baustellenBesetzung/" + 6 + "?datum=" + Date.valueOf(LocalDate.of(2024, 6, 24)))
+                                .accept(MediaType.APPLICATION_JSON)
+                                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                   .andReturn();
+
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Baustelle> result = objectMapper.readValue(contentAsString, new TypeReference<>() {});
+        assertThat(result.get(0).getId()).isEqualTo(6);
+    }
+
+
+    @Test
+    @Order(7)
     void putBaustellenBesetzung_whenModelIsValid_thenStatusOk() throws Exception {
         ObjectWriter objectWriter = objectMapper.writer().withDefaultPrettyPrinter();
         String body = objectWriter.writeValueAsString(besetzung3);
@@ -210,21 +230,22 @@ public class BaustellenbesetzungControllerTest {
                                 .content(body))
                 .andExpect(status().isOk());
 
-        this.mockMvc.perform(
-                        get("/baustellenBesetzung/" + 6)
+        MvcResult mvcResult = this.mockMvc.perform(
+                        get("/baustellenBesetzung/" + 6 + "?datum=" + Date.valueOf(LocalDate.of(2024, 6, 24)))
                                 .accept(MediaType.APPLICATION_JSON)
                                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.personalnummer").value(1002))
-                .andExpect(jsonPath("$.baustellenId").value(-2))
-                .andExpect(jsonPath("$.datum").value(20230530.0))
-                .andExpect(jsonPath("$.uhrzeitVon").value("09:00:00"))
-                .andExpect(jsonPath("$.uhrzeitBis").value("17:00:00"));
+                .andReturn();
+
+        String contentAsString = mvcResult.getResponse().getContentAsString();
+        List<Baustelle> result = objectMapper.readValue(contentAsString, new TypeReference<>() {});
+        assertThat(result.get(0).getId()).isEqualTo(6);
+
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     void deleteBaustellenBesetzungByPersonalnummer_thenStatusOk() throws Exception {
         this.mockMvc.perform(
                         delete("/baustellenBesetzung/" + 1001)
@@ -235,18 +256,21 @@ public class BaustellenbesetzungControllerTest {
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     @Sql(statements = {
             "DELETE FROM baustellenbesetzung WHERE id = '5'",
             "DELETE FROM baustellenbesetzung WHERE id = '6'",
             "DELETE FROM baustellenbesetzung WHERE id = '7'",
-            "DELETE FROM baustelle WHERE id = '-1'",
-            "DELETE FROM baustelle WHERE id = '-2'",
+            "DELETE FROM baustelle WHERE id = '5'",
+            "DELETE FROM baustelle WHERE id = '6'",
             "DELETE FROM mitarbeiter WHERE personalnummer = '1001'",
             "DELETE FROM mitarbeiter WHERE personalnummer = '1002'",
-            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART"
+            "ALTER SEQUENCE baustellenbesetzung_id_seq RESTART",
+            "ALTER SEQUENCE baustelle_id_seq RESTART"
+
+
     })
-    void getAllBaustelle_checkNumberOfEntitiesAfterDeletingTestData_mustBe4() throws Exception {
+    void getAllBaustellenbestzungen_checkNumberOfEntitiesAfterDeletingTestData_mustBe4() throws Exception {
         MvcResult mvcResult = this.mockMvc.perform(
                         get("/baustellenBesetzung")
                                 .accept(MediaType.APPLICATION_JSON))

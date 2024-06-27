@@ -13,6 +13,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -34,7 +35,6 @@ public class BeitragServiceTest {
 
     @BeforeAll
     void setUp() {
-        baustelle.setId(-1);
         baustelle.setTitel("Baustelle 1");
         baustelle.setName_bauherr("Bauherr1");
         baustelle.setAdresse("Adresse1");
@@ -42,21 +42,18 @@ public class BeitragServiceTest {
         baustelle.setTelefon("123456789");
         baustelle.setEmail("bauherr1@example.com");
         baustelle.setArbeitsaufwand(10);
-        baustelle.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
 
 
         baustelleService.addBaustelle(baustelle);
 
-        beitrag1.setId(-1);
+
         beitrag1.setFreitext("text1");
-        beitrag1.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
-        beitrag1.setBaustelleId(-1);
+        beitrag1.setBaustelleId(5);
         beitrag1.setPersonalnummer(100);
 
-        beitrag2.setId(-2);
+
         beitrag2.setFreitext("text2");
-        beitrag2.setZeitstempel(Timestamp.valueOf("2024-07-14 14:30:00"));
-        beitrag2.setBaustelleId(-1);
+        beitrag2.setBaustelleId(5);
         beitrag2.setPersonalnummer(100);
     }
 
@@ -83,8 +80,8 @@ public class BeitragServiceTest {
         var actualId1 = beitragService.addBeitrag(beitrag1);
         var actualId2 = beitragService.addBeitrag(beitrag2);
         //assert
-        assertThat(actualId1).isEqualTo(-1);
-        assertThat(actualId2).isEqualTo(-2);
+        assertThat(actualId1).isEqualTo(6);
+        assertThat(actualId2).isEqualTo(7);
     }
 
     @Order(3)
@@ -102,10 +99,10 @@ public class BeitragServiceTest {
     @Test
     void getBeitragById_whenEntityExists_thenReturnEntity() {
         //actual
-        var actualEntity = beitragService.getBeitragById(-1);
+        var actualEntity = beitragService.getBeitragById(6);
         //assert
         assertThat(actualEntity).isPresent();
-        assertEquals(-1, actualEntity.get().getBaustelleId());
+        assertEquals(5, actualEntity.get().getBaustelleId());
     }
 
     @Order(5)
@@ -120,16 +117,16 @@ public class BeitragServiceTest {
     void updateBeitrag_whenValidModel_thenReturnEntityId() {
         //arrange
         var updatedBeitrag = new Beitrag();
-        updatedBeitrag.setId(-1);
+        updatedBeitrag.setId(6);
         updatedBeitrag.setFreitext("text3");
-        updatedBeitrag.setZeitstempel(Timestamp.valueOf("2024-03-21 09:15:45"));
-        updatedBeitrag.setBaustelleId(-1);
+        updatedBeitrag.setZeitstempel(LocalDateTime.of(2024,6,21,21,14,45));
+        updatedBeitrag.setBaustelleId(5);
         updatedBeitrag.setPersonalnummer(100);
         //actual
         var actualId = beitragService.updateBeitrag(updatedBeitrag);
         var actualEntity = beitragService.getBeitragById(actualId);
         //assert
-        assertThat(actualId).isEqualTo(-1);
+        assertThat(actualId).isEqualTo(6);
         assertThat(actualEntity).isPresent();
         assertThat(actualEntity.get().getFreitext()).isEqualTo("text3");
     }
@@ -157,10 +154,9 @@ public class BeitragServiceTest {
     @Test
     void deleteBeitragById_whenExcuted_thenCertainBeitragNull() {
         // act
-        beitragService.deleteBeitragById(-1);
-        beitragService.deleteBeitragById(-2);
+        beitragService.deleteBeitragById(6);
         // assert
-        assertThat(beitragService.getBeitragById(-1)).isNotPresent();
+        assertThat(beitragService.getBeitragById(6)).isNotPresent();
     }
 
     @Order(10)
@@ -170,10 +166,10 @@ public class BeitragServiceTest {
         //arrange
         var expectedEntities = 5;
         // act
-        beitragService.deleteAllBeitragByBaustellenId(-1);
+        beitragService.deleteAllBeitragByBaustellenId(5);
         var actualEntities = beitragService.getAllBeitraege();
         // assert
-        assertThat(beitragService.getAllBeitraegeByBaustellenId(-1)).isEmpty();
+        assertThat(beitragService.getAllBeitraegeByBaustellenId(5)).isEmpty();
         assertEquals(expectedEntities, actualEntities.size());
 
     }
@@ -181,9 +177,13 @@ public class BeitragServiceTest {
     @Order(11)
     @Test
     @Sql(statements = {
-            "DELETE FROM beitrag WHERE id = '-1'",
-            "DELETE FROM beitrag WHERE id = '-2'",
-            "DELETE FROM baustelle WHERE id = '-1'"
+            "DELETE FROM beitrag WHERE id = '6'",
+            "DELETE FROM beitrag WHERE id = '7'",
+            "DELETE FROM baustelle WHERE id = '5'",
+            "ALTER SEQUENCE beitrags_id_seq RESTART",
+            "ALTER SEQUENCE baustelle_id_seq RESTART"
+
+
     })
     void getAllBeitraege_checkNumberOfEntitiesAfterDeletingTestData_must5() {
         //arrange
