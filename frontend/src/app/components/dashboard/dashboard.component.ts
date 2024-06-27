@@ -8,6 +8,7 @@ import {Employee} from "../../model/employee";
 import {ConstructionSite} from "../../model/constructionSite";
 import {ConstructionSiteService} from "../../services/construction/construction-site.service";
 import {EmployeeService} from "../../services/employee/employee.service";
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -43,7 +44,8 @@ export class DashboardComponent implements OnInit{
     private client: HttpClient,
     private route: ActivatedRoute,
     private constructionSiteService: ConstructionSiteService,
-    private employeeService: EmployeeService
+    private employeeService: EmployeeService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -127,6 +129,15 @@ export class DashboardComponent implements OnInit{
       this.loadProjects();
     }
   }
+
+  navigateToEmployeeManagement() {
+    this.router.navigate(['/employeeadministration']);
+  }
+
+  navigateToProject() {
+    this.router.navigate(['/projectnew']);
+  }
+
 
 
 }

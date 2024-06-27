@@ -27,10 +27,10 @@ export interface Beitrag {
 })
 export class ProjectDetailComponent implements OnInit {
   project: ConstructionSite = {};
-  messages: { text: string, timestamp: Date, user: string, images: string[] }[] = [];
+  messages: { personalnummer: number, text: string, images: string[] }[] = [];
   newMessage: string = '';
   selectedFiles: File[] = [];
-  projectIDUrl?: number | null;
+  public projectIDUrl!: number | null;
   personalnummerUrl!: number | null;
   mitarbeiterDaten: Employee = {};
 
@@ -67,6 +67,7 @@ export class ProjectDetailComponent implements OnInit {
           this.mitarbeiterDaten.vorname = data.vorname;
           this.mitarbeiterDaten.nachname = data.nachname;
           this.mitarbeiterDaten.admin = data.admin;
+          this.mitarbeiterDaten.personalnummer= data.personalnummer;
         }, error => {
           console.error('Fehler beim Laden der Mitarbeiterdaten:', error);
         });
@@ -93,6 +94,7 @@ export class ProjectDetailComponent implements OnInit {
           .map(beitrag =>
             this.loadEmployeeData(beitrag.personalnummer!).pipe(
               map(employee => ({
+                personalnummer: beitrag.personalnummer!,
                 text: beitrag.freitext || '',
                 timestamp: new Date(beitrag.zeitstempel || ''),
                 user: `${employee.vorname} ${employee.nachname}`,
@@ -114,22 +116,13 @@ export class ProjectDetailComponent implements OnInit {
       const newMsg: Beitrag = {
         freitext: this.newMessage,
         baustelleId: this.projectIDUrl,
-        personalnummer: this.mitarbeiterDaten.personalnummer, // Beispielbenutzer
-        zeitstempel: new Date().toISOString(),
+        personalnummer: this.mitarbeiterDaten.personalnummer!,
       };
 
       // Nachricht an Backend senden
       this.client.post<Beitrag>('http://localhost:8080/beitrag', newMsg)
         .subscribe(
           response => {
-            this.loadEmployeeData(response.personalnummer!).subscribe(employee => {
-              this.messages.push({
-                text: response.freitext || '',
-                timestamp: new Date(response.zeitstempel || ''),
-                user: `${employee.vorname} ${employee.nachname}`,
-                images: this.selectedFiles.map(file => URL.createObjectURL(file))
-              });
-            });
             this.newMessage = '';
             this.selectedFiles = [];
             this.fileInput.nativeElement.value = '';
@@ -138,6 +131,7 @@ export class ProjectDetailComponent implements OnInit {
             console.error('Fehler beim Senden der Nachricht:', error);
           }
         );
+         window.location.reload();
     }
   }
 

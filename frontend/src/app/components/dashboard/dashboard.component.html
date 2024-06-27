@@ -16,8 +16,8 @@
 
   <button (click)="applyFilter()">Filter anwenden</button>
   <div  class="admin-buttons" *ngIf="mitarbeiterDaten.admin">
-    <button >Mitarbeiterverwaltung</button>
-    <button >Projekt</button>
+    <button (click)="navigateToEmployeeManagement()">Mitarbeiterverwaltung</button>
+    <button (click)="navigateToProject()">Projekt</button>
   </div>
 </div>
 
