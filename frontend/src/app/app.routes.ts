@@ -10,8 +10,8 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'dashboard/:personalnummer', component: DashboardComponent },
   { path: 'projectdetail/:personalnummer/:projectid', component: ProjectDetailComponent },
-  { path: 'employeeadministration', component: EmployeeAdministrationComponent },
-  { path: 'projectnew', component: ProjectNewComponent },
-  { path: 'projectedit', component: ProjectEditComponent },
+  { path: 'employeeadministration/:personalnummer', component: EmployeeAdministrationComponent },
+  { path: 'projectnew/:personalnummer', component: ProjectNewComponent },
+  { path: 'projectedit/:personalnummer', component: ProjectEditComponent },
   { path: '**', redirectTo: 'login' }
 ];

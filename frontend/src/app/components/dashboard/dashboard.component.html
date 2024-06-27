@@ -1,23 +1,24 @@
 <h1 style="margin: 0 0 50px 0">Hallo, {{mitarbeiterDaten.vorname}} {{mitarbeiterDaten.nachname}}</h1>
+<div style="display: flex; justify-content: space-between;">
+  <div class="filter-container">
+    <label for="filterType">Filter:</label>
+    <select id="filterType" [(ngModel)]="filterType" (change)="onFilterTypeChange()">
+      <option *ngFor="let type of filterTypes" [value]="type.value">{{ type.label }}</option>
+    </select>
 
-<div class="filter-container">
-  <label for="filterType">Filter:</label>
-  <select id="filterType" [(ngModel)]="filterType" (change)="onFilterTypeChange()">
-    <option *ngFor="let type of filterTypes" [value]="type.value">{{ type.label }}</option>
-  </select>
+    <label for="filterValue" *ngIf="filterType">Wert:</label>
+    <select id="filterValue" [(ngModel)]="filterValue" *ngIf="filterType === 'status'">
+      <option *ngFor="let value of statuses" [value]="value">{{ value }}</option>
+    </select>
+    <select [(ngModel)]="filterValue" *ngIf="filterType === 'employee'">
+      <option *ngFor="let employee of employees" [ngValue]="employee">{{employee.vorname}} {{employee.nachname}}</option>
+    </select>
 
-  <label for="filterValue" *ngIf="filterType">Wert:</label>
-  <select id="filterValue" [(ngModel)]="filterValue" *ngIf="filterType === 'status'">
-    <option *ngFor="let value of statuses" [value]="value">{{ value }}</option>
-  </select>
-  <select [(ngModel)]="filterValue" *ngIf="filterType === 'employee'">
-    <option *ngFor="let employee of employees" [ngValue]="employee">{{employee.vorname}} {{employee.nachname}}</option>
-  </select>
-
-  <button (click)="applyFilter()">Filter anwenden</button>
+    <button (click)="applyFilter()">Filter anwenden</button>
+  </div>
   <div  class="admin-buttons" *ngIf="mitarbeiterDaten.admin">
-    <button >Mitarbeiterverwaltung</button>
-    <button >Projekt</button>
+    <button (click)="navigateToEmployeeManagement()">Mitarbeiterverwaltung</button>
+    <button (click)="navigateToProject()">Projekt anlegen</button>
   </div>
 </div>
 
