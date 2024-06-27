@@ -131,11 +131,11 @@ export class DashboardComponent implements OnInit{
   }
 
   navigateToEmployeeManagement() {
-    this.router.navigate(['/employeeadministration']);
+    this.router.navigate([`/employeeadministration/${this.personalnummerUrl}`]);
   }
 
   navigateToProject() {
-    this.router.navigate(['/projectnew']);
+    this.router.navigate([`/projectnew/${this.personalnummerUrl}`]);
   }
 
 

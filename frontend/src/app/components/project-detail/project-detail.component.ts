@@ -27,10 +27,10 @@ export interface Beitrag {
 })
 export class ProjectDetailComponent implements OnInit {
   project: ConstructionSite = {};
-  messages: { personalnummer: number, text: string, images: string[] }[] = [];
+  messages: { personalnummer: number, timestamp?: Date, user?: string, text: string, images: string[] }[] = [];
   newMessage: string = '';
   selectedFiles: File[] = [];
-  public projectIDUrl!: number | null;
+  projectIDUrl?: number | null;
   personalnummerUrl!: number | null;
   mitarbeiterDaten: Employee = {};
 
@@ -86,6 +86,27 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   loadMessages(baustellenId: number) {
+    let testMessages: { personalnummer: number, timestamp?: Date, user?: string, text: string, images: string[] }[]  = [];
+
+    if (baustellenId === 1) {
+      testMessages = [
+        {
+          personalnummer: 100,
+          text: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+          timestamp: new Date('2024-06-23T09:30:00'),
+          user: "Hans Müller",
+          images: ["assets/testdaten/baustelle-rohbau-einfamilienhaus-superingo-adobestock.jpg", "assets/testdaten/fertighausexperte.jpg"]
+        },
+        {
+          personalnummer: 100,
+          text: "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+          timestamp: new Date('2024-06-24T19:30:00'),
+          user: "Hans Müller",
+          images: []
+        }
+      ];
+    }
+
     const messagesUrl = `http://localhost:8080/beitraege`;
     console.log('Loading messages from URL:', messagesUrl);
     this.client.get<Beitrag[]>(messagesUrl)
@@ -98,14 +119,15 @@ export class ProjectDetailComponent implements OnInit {
                 text: beitrag.freitext || '',
                 timestamp: new Date(beitrag.zeitstempel || ''),
                 user: `${employee.vorname} ${employee.nachname}`,
-                images: [] // Assuming no images provided in `Beitrag`
+                images: []
               }))
             )
           );
 
         forkJoin(employeeObservables).subscribe(messages => {
-          this.messages = messages;
+          this.messages = [...testMessages, ...messages];
         });
+
       }, error => {
         console.error('Fehler beim Laden der Nachrichten:', error);
       });
