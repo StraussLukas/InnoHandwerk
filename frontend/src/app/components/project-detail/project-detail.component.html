@@ -1,9 +1,12 @@
 <div class="project-detail">
-  <app-project-info-tile [project]="project"></app-project-info-tile>
+  <div class="info-tile-container" style="position: relative;">
+    <app-project-info-tile [project]="project"></app-project-info-tile>
+    <button class="edit-button" (click)="navigateToEdit()">Bearbeiten</button>
+  </div>
   <div class="middle-box">
     <div class="middle-box-header">
       <input type="date" class="calendar-input" [value]="currentDate" (change)="onDateChange($event)">
-      <label class="employee-label"><b>Mitarbeiter:</b> {{ getEmployeeNames() }}</label>
+      <label class="employee-label">Mitarbeiter:<span class="employee-names">{{ getEmployeeNames() }}</span></label>
     </div>
     <button class="assign-button" (click)="openModal()">Mitarbeiter Zuweisen</button>
   </div>
@@ -19,15 +22,18 @@
   </div>
 </div>
 
-<!-- Modal -->
 <div class="modal" *ngIf="showModal">
   <div class="modal-content">
     <span class="close-button" (click)="closeModal()">&times;</span>
     <form>
       <div class="form-group">
         <div class="form-row">
-          <label class="form-label">Personalnummer:</label>
-          <input class="form-input" type="number" [(ngModel)]="newEmployeePersonalnummer" name="personalnummer" required>
+          <label class="form-label">Mitarbeiter:</label>
+          <select class="form-input" [(ngModel)]="selectedEmployee" name="employee" required>
+            <option *ngFor="let employee of employees" [ngValue]="employee">
+              {{employee.vorname}} {{employee.nachname}}
+            </option>
+          </select>
         </div>
         <div class="form-row">
           <label class="form-label">Datum:</label>
@@ -35,11 +41,11 @@
         </div>
         <div class="form-row">
           <label class="form-label">Uhrzeit von:</label>
-          <input class="form-input" type="time" [(ngModel)]="newEmployeeStartTime" name="uhrzeitVon" value="08:00" required>
+          <input class="form-input" type="time" [(ngModel)]="newEmployeeStartTime" name="uhrzeitVon" required>
         </div>
         <div class="form-row">
           <label class="form-label">Uhrzeit bis:</label>
-          <input class="form-input" type="time" [(ngModel)]="newEmployeeEndTime" name="uhrzeitBis" value="16:00" required>
+          <input class="form-input" type="time" [(ngModel)]="newEmployeeEndTime" name="uhrzeitBis" required>
         </div>
       </div>
       <div class="button-group">
