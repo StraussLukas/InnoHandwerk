@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Observable, forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ConstructionSite } from '../../model/constructionSite';
 
 export interface Beitrag {
@@ -53,7 +53,7 @@ export class ProjectDetailComponent implements OnInit {
 
   @ViewChild('fileInput') fileInput!: ElementRef;
 
-  constructor(private client: HttpClient, private route: ActivatedRoute) {}
+  constructor(private client: HttpClient, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit() {
     const parameterFromUrl = this.route.snapshot.paramMap.get('projectid');
@@ -255,5 +255,13 @@ export class ProjectDetailComponent implements OnInit {
 
   getEmployeeNames(): string {
     return this.assignedEmployees.map(e => `${e.vorname} ${e.nachname}`).join(', ');
+  }
+
+  navigateToEdit() {
+    if (this.projectIDUrl !== null && this.personalnummerUrl !== null) {
+      this.router.navigate([`/projectedit/${this.personalnummerUrl}/${this.projectIDUrl}`]);
+    } else {
+      console.error('Projekt- oder Personalnummer fehlen.');
+    }
   }
 }

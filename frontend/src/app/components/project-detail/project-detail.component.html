@@ -1,5 +1,8 @@
 <div class="project-detail">
-  <app-project-info-tile [project]="project"></app-project-info-tile>
+  <div class="info-tile-container" style="position: relative;">
+    <app-project-info-tile [project]="project"></app-project-info-tile>
+    <button class="edit-button" (click)="navigateToEdit()">Bearbeiten</button>
+  </div>
   <div class="middle-box">
     <div class="middle-box-header">
       <input type="date" class="calendar-input" [value]="currentDate" (change)="onDateChange($event)">

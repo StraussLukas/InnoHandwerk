@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { ProjectDisplayComponent } from '../shared/project-display/project-display.component';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { ConstructionSite } from '../../model/constructionSite';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-project-edit',
@@ -14,9 +15,10 @@ import { ConstructionSite } from '../../model/constructionSite';
 })
 export class ProjectEditComponent implements OnInit {
   projectForm: FormGroup;
-  private projectId = 10;
+  private projectId: number | null = null;
+  private personalnummer: number | null = null;
 
-  constructor(private fb: FormBuilder, private http: HttpClient) {
+  constructor(private fb: FormBuilder, private http: HttpClient, private route: ActivatedRoute, private router: Router) {
     this.projectForm = this.fb.group({
       id: [this.projectId],
       titel: ['', Validators.required],
@@ -31,7 +33,13 @@ export class ProjectEditComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.loadProject();
+    this.route.paramMap.subscribe(params => {
+      this.projectId = +params.get('projectid')!;
+      this.personalnummer = +params.get('personalnummer')!;
+      if (this.projectId) {
+        this.loadProject();
+      }
+    });
   }
 
   loadProject() {
@@ -51,9 +59,11 @@ export class ProjectEditComponent implements OnInit {
   }
 
   sendProjectToBackend(project: Partial<ConstructionSite>) {
-    const apiUrl = `http://localhost:8080/baustelle/${this.projectId}`;
+    const apiUrl = `http://localhost:8080/baustelle`;
     this.http.put(apiUrl, project).subscribe(
-      response => {},
+      response => {
+        this.router.navigate([`/projectdetail/${this.personalnummer}/${this.projectId}`]);
+      },
       error => {
         console.error('Fehler beim Aktualisieren des Projekts:', error);
       }
