@@ -11,7 +11,7 @@ export const routes: Routes = [
   { path: 'dashboard/:personalnummer', component: DashboardComponent },
   { path: 'projectdetail/:personalnummer/:projectid', component: ProjectDetailComponent },
   { path: 'employeeadministration/:personalnummer', component: EmployeeAdministrationComponent },
-  { path: 'projectnew/:personalnummer/:projectid', component: ProjectNewComponent },
+  { path: 'projectnew/:personalnummer', component: ProjectNewComponent },
   { path: 'projectedit/:personalnummer/:projectid', component: ProjectEditComponent },
   { path: '**', redirectTo: 'login' }
 ];

@@ -1,14 +1,14 @@
 <div class="project-detail">
   <div class="info-tile-container" style="position: relative;">
     <app-project-info-tile [project]="project"></app-project-info-tile>
-    <button class="edit-button" (click)="navigateToEdit()">Bearbeiten</button>
+    <button class="edit-button" (click)="navigateToEdit()" *ngIf="mitarbeiterDaten.admin">Bearbeiten</button>
   </div>
   <div class="middle-box">
     <div class="middle-box-header">
       <input type="date" class="calendar-input" [value]="currentDate" (change)="onDateChange($event)">
       <label class="employee-label">Mitarbeiter:<span class="employee-names">{{ getEmployeeNames() }}</span></label>
     </div>
-    <button class="assign-button" (click)="openModal()">Mitarbeiter Zuweisen</button>
+    <button class="assign-button" (click)="openModal()" *ngIf="mitarbeiterDaten.admin">Mitarbeiter Zuweisen</button>
   </div>
   <div class="chat-section">
     <div class="messages">

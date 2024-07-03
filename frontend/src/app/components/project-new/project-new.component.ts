@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { ProjectDisplayComponent } from '../shared/project-display/project-display.component';
 import { ConstructionSite } from '../../model/constructionSite';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-project-new',
@@ -12,7 +13,13 @@ import { ConstructionSite } from '../../model/constructionSite';
   styleUrls: ['./project-new.component.css']
 })
 export class ProjectNewComponent {
-  constructor(private http: HttpClient) {}
+  private personalnummer: number | null = null;
+
+  constructor(private http: HttpClient, private router: Router, private route: ActivatedRoute) {
+    this.route.paramMap.subscribe(params => {
+      this.personalnummer = +params.get('personalnummer')!;
+    });
+  }
 
   createProject(formValue: ConstructionSite) {
     this.sendProjectToBackend(formValue);
@@ -21,7 +28,12 @@ export class ProjectNewComponent {
   sendProjectToBackend(project: Partial<ConstructionSite>) {
     const apiUrl = 'http://localhost:8080/baustelle';
     this.http.post(apiUrl, project).subscribe(
-      response => {},
+      response => {
+        // Navigate to the dashboard page
+        if (this.personalnummer !== null) {
+          this.router.navigate([`/dashboard/${this.personalnummer}`]);
+        }
+      },
       error => {
         console.error('Error sending project to backend', error);
       }

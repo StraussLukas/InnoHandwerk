@@ -56,37 +56,44 @@ export class ProjectDetailComponent implements OnInit {
   constructor(private client: HttpClient, private route: ActivatedRoute, private router: Router) {}
 
   ngOnInit() {
-    const parameterFromUrl = this.route.snapshot.paramMap.get('projectid');
-    if (parameterFromUrl !== null && !isNaN(+parameterFromUrl)) {
-      this.projectIDUrl = +parameterFromUrl;
+    const projectIdParam = this.route.snapshot.paramMap.get('projectid');
+    if (projectIdParam !== null && !isNaN(+projectIdParam)) {
+      this.projectIDUrl = +projectIdParam;
     } else {
       this.projectIDUrl = null;
     }
 
+    const personalnummerParam = this.route.snapshot.paramMap.get('personalnummer');
+    if (personalnummerParam !== null && !isNaN(+personalnummerParam)) {
+      this.personalnummerUrl = +personalnummerParam;
+    } else {
+      this.personalnummerUrl = null;
+    }
+
     if (this.projectIDUrl !== null) {
       const projectUrl = `http://localhost:8080/baustelle/${this.projectIDUrl}`;
-      this.client.get<ConstructionSite>(projectUrl)
-        .subscribe(data => {
+      this.client.get<ConstructionSite>(projectUrl).subscribe(
+        data => {
           this.project = data;
-        }, error => {
+        },
+        error => {
           console.error('Fehler beim Laden der Baustelle:', error);
-        });
+        }
+      );
 
-      const parameterFromUrl = this.route.snapshot.paramMap.get('personalnummer');
-      if (parameterFromUrl !== null && !isNaN(+parameterFromUrl)) {
-        this.personalnummerUrl = +parameterFromUrl;
-      } else {
-        this.personalnummerUrl = null;
+      if (this.personalnummerUrl !== null) {
+        this.client.get<Employee>(`http://localhost:8080/mitarbeiter/${this.personalnummerUrl}`).subscribe(
+          data => {
+            this.mitarbeiterDaten.vorname = data.vorname;
+            this.mitarbeiterDaten.nachname = data.nachname;
+            this.mitarbeiterDaten.admin = data.admin;
+            this.mitarbeiterDaten.personalnummer = data.personalnummer;
+          },
+          error => {
+            console.error('Fehler beim Laden der Mitarbeiterdaten:', error);
+          }
+        );
       }
-      this.client.get<Employee>(`http://localhost:8080/mitarbeiter/${this.personalnummerUrl}`)
-        .subscribe(data => {
-          this.mitarbeiterDaten.vorname = data.vorname;
-          this.mitarbeiterDaten.nachname = data.nachname;
-          this.mitarbeiterDaten.admin = data.admin;
-          this.mitarbeiterDaten.personalnummer = data.personalnummer;
-        }, error => {
-          console.error('Fehler beim Laden der Mitarbeiterdaten:', error);
-        });
 
       this.loadMessages(this.projectIDUrl);
       this.loadEmployeesForDate(this.currentDate);
@@ -126,28 +133,28 @@ export class ProjectDetailComponent implements OnInit {
     }
 
     const messagesUrl = `http://localhost:8080/beitraege`;
-    this.client.get<Beitrag[]>(messagesUrl)
-      .subscribe(data => {
-        const employeeObservables = data.filter(beitrag => beitrag.baustelleId === baustellenId)
-          .map(beitrag =>
-            this.loadEmployeeData(beitrag.personalnummer!).pipe(
-              map(employee => ({
-                personalnummer: beitrag.personalnummer!,
-                text: beitrag.freitext || '',
-                timestamp: new Date(beitrag.zeitstempel || ''),
-                user: `${employee.vorname} ${employee.nachname}`,
-                images: []
-              }))
-            )
-          );
+    this.client.get<Beitrag[]>(messagesUrl).subscribe(
+      data => {
+        const employeeObservables = data.filter(beitrag => beitrag.baustelleId === baustellenId).map(beitrag =>
+          this.loadEmployeeData(beitrag.personalnummer!).pipe(
+            map(employee => ({
+              personalnummer: beitrag.personalnummer!,
+              text: beitrag.freitext || '',
+              timestamp: new Date(beitrag.zeitstempel || ''),
+              user: `${employee.vorname} ${employee.nachname}`,
+              images: []
+            }))
+          )
+        );
 
         forkJoin(employeeObservables).subscribe(messages => {
           this.messages = [...testMessages, ...messages];
         });
-
-      }, error => {
+      },
+      error => {
         console.error('Fehler beim Laden der Nachrichten:', error);
-      });
+      }
+    );
   }
 
   sendMessage() {
@@ -158,17 +165,16 @@ export class ProjectDetailComponent implements OnInit {
         personalnummer: this.mitarbeiterDaten.personalnummer!,
       };
 
-      this.client.post<Beitrag>('http://localhost:8080/beitrag', newMsg)
-        .subscribe(
-          response => {
-            this.newMessage = '';
-            this.selectedFiles = [];
-            this.fileInput.nativeElement.value = '';
-          },
-          error => {
-            console.error('Fehler beim Senden der Nachricht:', error);
-          }
-        );
+      this.client.post<Beitrag>('http://localhost:8080/beitrag', newMsg).subscribe(
+        response => {
+          this.newMessage = '';
+          this.selectedFiles = [];
+          this.fileInput.nativeElement.value = '';
+        },
+        error => {
+          console.error('Fehler beim Senden der Nachricht:', error);
+        }
+      );
       window.location.reload();
     }
   }
@@ -191,12 +197,14 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   loadAllEmployees() {
-    this.client.get<Employee[]>('http://localhost:8080/mitarbeiter')
-      .subscribe(data => {
+    this.client.get<Employee[]>('http://localhost:8080/mitarbeiter').subscribe(
+      data => {
         this.employees = data;
-      }, error => {
+      },
+      error => {
         console.error('Fehler beim Laden der Mitarbeiterliste:', error);
-      });
+      }
+    );
   }
 
   addEmployeeToDate() {
@@ -209,24 +217,23 @@ export class ProjectDetailComponent implements OnInit {
         uhrzeitBis: `${this.newEmployeeEndTime}:00`
       };
 
-      this.client.post<Baustellenbesetzung>('http://localhost:8080/baustellenBesetzung', newAssignment)
-        .subscribe(
-          response => {
-            this.closeModal();
-            this.loadEmployeesForDate(this.newEmployeeDate);
-          },
-          error => {
-            console.error('Fehler beim Hinzufügen des Mitarbeiters:', error);
-          }
-        );
+      this.client.post<Baustellenbesetzung>('http://localhost:8080/baustellenBesetzung', newAssignment).subscribe(
+        response => {
+          this.closeModal();
+          this.loadEmployeesForDate(this.newEmployeeDate);
+        },
+        error => {
+          console.error('Fehler beim Hinzufügen des Mitarbeiters:', error);
+        }
+      );
     }
   }
 
   loadEmployeesForDate(date: string) {
     if (this.projectIDUrl !== null) {
       this.assignedEmployees = [];
-      this.client.get<Baustellenbesetzung[]>(`http://localhost:8080/baustellenBesetzung/${this.projectIDUrl}?datum=${date}`)
-        .subscribe(data => {
+      this.client.get<Baustellenbesetzung[]>(`http://localhost:8080/baustellenBesetzung/${this.projectIDUrl}?datum=${date}`).subscribe(
+        data => {
           const employeeObservables = data.map(besetzung =>
             this.loadEmployeeData(besetzung.personalnummer!).pipe(
               map(employee => ({
@@ -240,9 +247,11 @@ export class ProjectDetailComponent implements OnInit {
           forkJoin(employeeObservables).subscribe(employees => {
             this.assignedEmployees = employees;
           });
-        }, error => {
+        },
+        error => {
           console.error('Fehler beim Laden der Mitarbeiter:', error);
-        });
+        }
+      );
     }
   }
 
