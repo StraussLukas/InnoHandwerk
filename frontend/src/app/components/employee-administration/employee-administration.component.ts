@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { EmployeeListComponent } from '../shared/employee-list/employee-list.component';
 import { HttpClient } from '@angular/common/http';
@@ -25,7 +25,7 @@ export class EmployeeAdministrationComponent implements OnInit {
       personalnummer: ['', Validators.required],
       vorname: ['', Validators.required],
       nachname: ['', Validators.required],
-      email: ['', Validators.required],
+    email: ['', [Validators.required, this.emailValidator]],
       admin: [false]
     });
   }
@@ -34,6 +34,13 @@ export class EmployeeAdministrationComponent implements OnInit {
     this.fetchEmployees();
   }
 
+  emailValidator(control: AbstractControl) {
+    const emailPattern = /^[^\s@]+@mail\.de$/;
+    if (!emailPattern.test(control.value)) {
+      return { invalidEmail: true };
+    }
+    return null;
+  }
   async fetchEmployees() {
     const employeeApiUrl = 'http://localhost:8080/mitarbeiter';
     const imageRightPath = '../../assets/trash-can.png';
