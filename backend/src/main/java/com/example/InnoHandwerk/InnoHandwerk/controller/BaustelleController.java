@@ -39,7 +39,7 @@ public class BaustelleController {
     }
 
     @GetMapping(value = "/baustellenbystatus/{status}")
-    public List<Baustelle> getAllBaustellenByPersonalnummer(@PathVariable String status){
+    public List<Baustelle> getAllBaustellenByStatus(@PathVariable String status){
         return service.getAllBaustellenByStatus(status);
     }
 
